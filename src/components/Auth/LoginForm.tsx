@@ -1,6 +1,3 @@
-
-
-
 // LoginForm.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -37,16 +34,11 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
 
     try {
       const response = await api.post('/auth/login', formData);
-      const { data } = response.data;
+      const { token, user } = response.data;
       
       // Store token and user data
-      localStorage.setItem('authToken', data.token);
-      setUser({
-        id: data.user.id,
-        name: data.user.name,
-        email: data.user.email,
-        role: data.user.role as 'admin' | 'seller' | 'customer'
-      });
+      localStorage.setItem('authToken', token);
+      setUser(user);
 
       toast({
         title: "Success",
@@ -54,7 +46,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
       });
 
       // Redirect based on role
-      const dashboardPath = `/${data.user.role}`;
+      const dashboardPath = `/${user.role}`;
       navigate(dashboardPath);
       
     } catch (error: any) {

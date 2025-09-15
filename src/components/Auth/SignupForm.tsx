@@ -20,7 +20,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     name: '',
     email: '',
     password: '',
-    role: 'customer',
+    role: 'CUSTOMER', // Changed to uppercase
     businessName: '',
     phoneNumber: '',
     address: ''
@@ -37,12 +37,13 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     setError('');
 
     try {
-      const response = await api.post('/auth/signup', formData);
+      // The formData now sends the correct uppercase role
+      await api.post('/auth/signup', formData);
       
       setSuccess(true);
       toast({
         title: "Success",
-        description: formData.role === 'seller' 
+        description: formData.role === 'SELLER' 
           ? "Account created! Your seller application is pending approval."
           : "Account created successfully! You can now log in.",
       });
@@ -52,7 +53,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
         name: '',
         email: '',
         password: '',
-        role: 'customer',
+        role: 'CUSTOMER', // Reset to uppercase default
         businessName: '',
         phoneNumber: '',
         address: ''
@@ -77,7 +78,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl text-green-600">Success!</CardTitle>
           <CardDescription>
-            {formData.role === 'seller' 
+            {formData.role === 'SELLER' 
               ? "Your seller application has been submitted and is pending approval."
               : "Your account has been created successfully."
             }
@@ -118,8 +119,9 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="customer">Customer</SelectItem>
-                <SelectItem value="seller">Seller</SelectItem>
+                {/* Values are now uppercase to match the backend enum */}
+                <SelectItem value="CUSTOMER">Customer</SelectItem>
+                <SelectItem value="SELLER">Seller</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -160,7 +162,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
             />
           </div>
 
-          {formData.role === 'seller' && (
+          {formData.role === 'SELLER' && (
             <>
               <div className="space-y-2">
                 <Label htmlFor="businessName">Business Name *</Label>

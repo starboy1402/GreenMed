@@ -1,4 +1,5 @@
-// Updated Navbar.tsx with authentication
+// src/components/Layout/Navbar.tsx
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Leaf, Menu, X, LogOut, User } from 'lucide-react';
@@ -11,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, UserRole } from '@/context/AuthContext'; // Import UserRole
 import { useToast } from '@/hooks/use-toast';
 
 const Navbar = () => {
@@ -38,7 +39,8 @@ const Navbar = () => {
   };
 
   const getDashboardLink = () => {
-    switch(role) {
+    // Use lowercase for comparison to match the 'role' state
+    switch (role) {
       case 'admin': return '/admin';
       case 'seller': return '/seller';
       case 'customer': return '/customer';
@@ -58,6 +60,7 @@ const Navbar = () => {
       { label: 'Orders', path: '/orders' },
     ];
 
+    // Use lowercase for comparison
     if (role === 'seller') {
       privateItems.push({ label: 'Inventory', path: '/inventory' });
     }
@@ -69,8 +72,9 @@ const Navbar = () => {
     return [...publicItems, ...privateItems];
   };
 
-  const getRoleColor = (userRole: string) => {
-    switch(userRole) {
+  const getRoleColor = (userRole: UserRole) => {
+    // Use lowercase for comparison
+    switch (userRole) {
       case 'admin': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300';
       case 'seller': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300';
       case 'customer': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
@@ -78,6 +82,7 @@ const Navbar = () => {
     }
   };
 
+  // ... rest of the component remains the same
   if (loading) {
     return (
       <nav className="bg-card border-b border-border">
