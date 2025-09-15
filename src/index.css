@@ -1,0 +1,207 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Plant Management System Design System - Nature Inspired */
+
+@layer base {
+  :root {
+    /* Nature-themed color palette */
+    --background: 0 0% 100%;
+    --foreground: 150 8% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 8% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 8% 15%;
+
+    /* Primary: Deep forest green */
+    --primary: 150 60% 25%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Primary variants for gradients */
+    --primary-light: 150 45% 35%;
+    --primary-dark: 150 70% 20%;
+
+    /* Secondary: Fresh leaf green */
+    --secondary: 120 40% 88%;
+    --secondary-foreground: 150 60% 25%;
+
+    /* Muted: Sage green */
+    --muted: 120 20% 92%;
+    --muted-foreground: 150 15% 45%;
+
+    /* Accent: Vibrant green */
+    --accent: 140 80% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Success: Natural green */
+    --success: 140 65% 40%;
+    --success-foreground: 0 0% 100%;
+
+    /* Warning: Earth tone */
+    --warning: 35 85% 55%;
+    --warning-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 120 15% 85%;
+    --input: 120 15% 95%;
+    --ring: 150 60% 25%;
+
+    --radius: 0.75rem;
+
+    /* Custom gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-nature: linear-gradient(135deg, hsl(140 70% 30%), hsl(120 60% 40%));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(120 20% 98%));
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px -4px hsl(var(--primary) / 0.1);
+    --shadow-medium: 0 8px 30px -8px hsl(var(--primary) / 0.15);
+    --shadow-strong: 0 15px 40px -10px hsl(var(--primary) / 0.2);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark nature theme */
+    --background: 150 15% 8%;
+    --foreground: 120 20% 95%;
+
+    --card: 150 12% 10%;
+    --card-foreground: 120 20% 95%;
+
+    --popover: 150 12% 10%;
+    --popover-foreground: 120 20% 95%;
+
+    --primary: 140 60% 50%;
+    --primary-foreground: 150 15% 8%;
+    
+    --primary-light: 140 50% 60%;
+    --primary-dark: 150 70% 35%;
+
+    --secondary: 150 20% 15%;
+    --secondary-foreground: 120 20% 95%;
+
+    --muted: 150 15% 12%;
+    --muted-foreground: 120 10% 65%;
+
+    --accent: 140 70% 55%;
+    --accent-foreground: 150 15% 8%;
+
+    --success: 140 65% 50%;
+    --success-foreground: 150 15% 8%;
+
+    --warning: 35 80% 60%;
+    --warning-foreground: 150 15% 8%;
+
+    --destructive: 0 75% 65%;
+    --destructive-foreground: 150 15% 8%;
+
+    --border: 150 15% 20%;
+    --input: 150 12% 15%;
+    --ring: 140 60% 50%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-nature: linear-gradient(135deg, hsl(140 50% 40%), hsl(120 40% 50%));
+    --gradient-subtle: linear-gradient(180deg, hsl(var(--background)), hsl(150 12% 12%));
+
+    --sidebar-background: 150 15% 8%;
+    --sidebar-foreground: 120 20% 95%;
+    --sidebar-primary: 140 60% 50%;
+    --sidebar-primary-foreground: 150 15% 8%;
+    --sidebar-accent: 150 15% 12%;
+    --sidebar-accent-foreground: 120 20% 95%;
+    --sidebar-border: 150 15% 20%;
+    --sidebar-ring: 140 60% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  /* Custom gradient utilities */
+  .bg-gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .bg-gradient-nature {
+    background: var(--gradient-nature);
+  }
+  
+  .bg-gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+  
+  /* Custom shadow utilities */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+  
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+  
+  /* Smooth transitions */
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+  
+  .transition-bounce {
+    transition: var(--transition-bounce);
+  }
+
+  /* Plant-themed animations */
+  @keyframes leaf-float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+  
+  @keyframes grow-in {
+    0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+    100% { transform: scale(1) translateY(0px); opacity: 1; }
+  }
+  
+  .animate-leaf-float {
+    animation: leaf-float 3s ease-in-out infinite;
+  }
+  
+  .animate-grow-in {
+    animation: grow-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+}
