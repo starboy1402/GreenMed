@@ -1,175 +1,238 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { 
-  Leaf, 
-  Users, 
-  Package, 
-  ShoppingCart, 
-  Settings, 
-  LogOut,
-  User
-} from 'lucide-react';
+// Updated Navbar.tsx with authentication
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Leaf, Menu, X, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { 
+import { Badge } from '@/components/ui/badge';
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/context/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Navbar = () => {
-  const { user, role, setRole, logout } = useAuth();
-  const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+  const { user, role, logout, loading } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const roleColors = {
-    admin: 'bg-destructive text-destructive-foreground',
-    seller: 'bg-warning text-warning-foreground', 
-    customer: 'bg-accent text-accent-foreground'
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast({
+        title: "Success",
+        description: "Logged out successfully",
+      });
+      navigate('/');
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Logout failed",
+        variant: "destructive"
+      });
+    }
   };
 
-  const navigationItems = {
-    admin: [
-      { path: '/admin', label: 'Dashboard', icon: Settings },
-      { path: '/plants', label: 'Plants', icon: Leaf },
-      { path: '/sellers', label: 'Sellers', icon: Users },
-    ],
-    seller: [
-      { path: '/seller', label: 'Dashboard', icon: Package },
-      { path: '/inventory', label: 'Inventory', icon: Package },
-      { path: '/plants', label: 'Plants', icon: Leaf },
-      { path: '/orders', label: 'Orders', icon: ShoppingCart },
-    ],
-    customer: [
-      { path: '/customer', label: 'Dashboard', icon: User },
-      { path: '/plants', label: 'Browse Plants', icon: Leaf },
-      { path: '/medicines', label: 'Medicines', icon: Package },
-      { path: '/orders', label: 'My Orders', icon: ShoppingCart },
-    ],
+  const getDashboardLink = () => {
+    switch(role) {
+      case 'admin': return '/admin';
+      case 'seller': return '/seller';
+      case 'customer': return '/customer';
+      default: return '/customer';
+    }
   };
 
-  const currentNavItems = navigationItems[role] || navigationItems.customer;
+  const getNavItems = () => {
+    const publicItems = [
+      { label: 'Plants', path: '/plants' },
+      { label: 'Medicines', path: '/medicines' },
+    ];
 
-  const isActivePath = (path: string) => {
-    return location.pathname === path || 
-           (path !== '/' && location.pathname.startsWith(path));
+    if (!user) return publicItems;
+
+    const privateItems = [
+      { label: 'Orders', path: '/orders' },
+    ];
+
+    if (role === 'seller') {
+      privateItems.push({ label: 'Inventory', path: '/inventory' });
+    }
+
+    if (role === 'admin') {
+      privateItems.push({ label: 'Sellers', path: '/sellers' });
+    }
+
+    return [...publicItems, ...privateItems];
   };
 
-  return (
-    <nav className="border-b bg-card shadow-soft">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo and Brand */}
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-primary">
-                <Leaf className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold text-foreground">PlantMS</span>
-            </Link>
-          </div>
+  const getRoleColor = (userRole: string) => {
+    switch(userRole) {
+      case 'admin': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300';
+      case 'seller': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300';
+      case 'customer': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
+      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-300';
+    }
+  };
 
-          {/* Navigation Links */}
-          <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
-              {currentNavItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-smooth ${
-                    isActivePath(item.path)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                  }`}
-                >
-                  <item.icon className="h-4 w-4" />
-                  <span>{item.label}</span>
-                </Link>
-              ))}
+  if (loading) {
+    return (
+      <nav className="bg-card border-b border-border">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Leaf className="h-8 w-8 text-primary animate-pulse" />
+              <span className="text-xl font-bold">Plant Management</span>
             </div>
           </div>
+        </div>
+      </nav>
+    );
+  }
 
-          {/* User Menu */}
-          <div className="flex items-center space-x-4">
-            {/* Role Switcher (for demo purposes) */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Badge className={roleColors[role]}>
-                    {role.charAt(0).toUpperCase() + role.slice(1)}
-                  </Badge>
+  return (
+    <nav className="bg-card border-b border-border shadow-sm">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+            <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center">
+              <Leaf className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold text-foreground">Plant Management</span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            {getNavItems().map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Right side */}
+          <div className="hidden md:flex items-center space-x-4">
+            {user ? (
+              <div className="flex items-center space-x-3">
+                {/* Dashboard Link */}
+                <Button asChild variant="ghost">
+                  <Link to={getDashboardLink()}>Dashboard</Link>
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setRole('admin')}>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Admin View
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setRole('seller')}>
-                  <Package className="mr-2 h-4 w-4" />
-                  Seller View
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setRole('customer')}>
-                  <User className="mr-2 h-4 w-4" />
-                  Customer View
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
 
-            {/* User Profile */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <div className="flex items-center space-x-2">
-                    <div className="h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                {/* User Menu */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center space-x-2">
                       <User className="h-4 w-4" />
-                    </div>
-                    <span className="text-sm font-medium">
-                      {user?.name || 'Demo User'}
-                    </span>
-                  </div>
+                      <span>{user.name}</span>
+                      <Badge className={getRoleColor(role)}>
+                        {role}
+                      </Badge>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem asChild>
+                      <Link to={getDashboardLink()}>
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout}>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <Button asChild variant="ghost">
+                  <Link to="/auth">Login</Link>
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <User className="mr-2 h-4 w-4" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  Settings
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={logout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                <Button asChild>
+                  <Link to="/auth">Sign Up</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1">
-            {currentNavItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium transition-smooth ${
-                  isActivePath(item.path)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              >
-                <item.icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
-            ))}
+        {isOpen && (
+          <div className="md:hidden border-t border-border">
+            <div className="px-2 pt-2 pb-3 space-y-1">
+              {getNavItems().map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="block px-3 py-2 text-muted-foreground hover:text-foreground transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+              
+              {user ? (
+                <div className="pt-4 border-t border-border mt-4">
+                  <div className="px-3 py-2">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className="text-sm font-medium">{user.name}</span>
+                      <Badge className={getRoleColor(role)}>
+                        {role}
+                      </Badge>
+                    </div>
+                  </div>
+                  <Link
+                    to={getDashboardLink()}
+                    className="block px-3 py-2 text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-4 border-t border-border mt-4">
+                  <Link
+                    to="/auth"
+                    className="block px-3 py-2 text-muted-foreground hover:text-foreground transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Login / Sign Up
+                  </Link>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </nav>
   );
