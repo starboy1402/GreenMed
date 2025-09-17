@@ -28,7 +28,8 @@ interface Order {
 }
 
 const OrdersPage = () => {
-  const { role, user } = useAuth();
+  const { user } = useAuth();
+  const role = (user as any)?.role ?? 'guest';
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
