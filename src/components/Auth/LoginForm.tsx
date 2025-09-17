@@ -45,10 +45,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
         description: "Login successful!",
       });
 
-      // Redirect based on role
-      const dashboardPath = `/${user.role}`;
+      // --- Start of Fix ---
+      // Redirect based on userType instead of role
+      const dashboardPath = `/${user.userType}`;
       navigate(dashboardPath);
+      // --- End of Fix ---
       
+
+
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || 'Login failed';
       setError(errorMessage);

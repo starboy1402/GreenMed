@@ -1,4 +1,4 @@
-// src/components/Layout/Navbar.tsx
+// File: src/components/Layout/Navbar.tsx
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,12 +12,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useAuth, UserRole } from '@/context/AuthContext'; // Import UserRole
+import { useAuth, UserRole } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { user, role, logout, loading } = useAuth();
+  const { user, userType, logout, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -39,8 +39,7 @@ const Navbar = () => {
   };
 
   const getDashboardLink = () => {
-    // Use lowercase for comparison to match the 'role' state
-    switch (role) {
+    switch (userType) {
       case 'admin': return '/admin';
       case 'seller': return '/seller';
       case 'customer': return '/customer';
@@ -60,21 +59,19 @@ const Navbar = () => {
       { label: 'Orders', path: '/orders' },
     ];
 
-    // Use lowercase for comparison
-    if (role === 'seller') {
+    if (userType === 'seller') {
       privateItems.push({ label: 'Inventory', path: '/inventory' });
     }
 
-    if (role === 'admin') {
+    if (userType === 'admin') {
       privateItems.push({ label: 'Sellers', path: '/sellers' });
     }
 
     return [...publicItems, ...privateItems];
   };
 
-  const getRoleColor = (userRole: UserRole) => {
-    // Use lowercase for comparison
-    switch (userRole) {
+  const getRoleColor = (currentUserType: UserRole | null) => {
+    switch (currentUserType) {
       case 'admin': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-300';
       case 'seller': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300';
       case 'customer': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-300';
@@ -82,7 +79,6 @@ const Navbar = () => {
     }
   };
 
-  // ... rest of the component remains the same
   if (loading) {
     return (
       <nav className="bg-card border-b border-border">
@@ -138,8 +134,8 @@ const Navbar = () => {
                     <Button variant="ghost" className="flex items-center space-x-2">
                       <User className="h-4 w-4" />
                       <span>{user.name}</span>
-                      <Badge className={getRoleColor(role)}>
-                        {role}
+                      <Badge className={getRoleColor(userType)}>
+                        {userType}
                       </Badge>
                     </Button>
                   </DropdownMenuTrigger>
@@ -202,8 +198,8 @@ const Navbar = () => {
                   <div className="px-3 py-2">
                     <div className="flex items-center space-x-2 mb-2">
                       <span className="text-sm font-medium">{user.name}</span>
-                      <Badge className={getRoleColor(role)}>
-                        {role}
+                      <Badge className={getRoleColor(userType)}>
+                        {userType}
                       </Badge>
                     </div>
                   </div>

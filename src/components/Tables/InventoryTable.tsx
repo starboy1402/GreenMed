@@ -196,7 +196,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                         className="w-20"
                       />
                     ) : (
-                      <span>${item.price.toFixed(2)}</span>
+                      <span>৳{item.price.toFixed(2)}</span>
                     )}
                     {item.unit && <span className="text-xs text-muted-foreground">/{item.unit}</span>}
                   </td>
@@ -227,7 +227,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                     </Badge>
                   </td>
                   <td className="py-4">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ৳{(item.price * item.quantity).toFixed(2)}
                   </td>
                   <td className="py-4 text-right">
                     {isEditing ? (
@@ -297,7 +297,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                         className="mt-1"
                       />
                     ) : (
-                      <div className="font-medium">${item.price.toFixed(2)}</div>
+                      <div className="font-medium">৳{item.price.toFixed(2)}</div>
                     )}
                   </div>
                   
@@ -331,7 +331,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                   
                   <div className="text-right">
                     <div className="text-sm text-muted-foreground">Total Value</div>
-                    <div className="font-semibold">${(item.price * item.quantity).toFixed(2)}</div>
+                    <div className="font-semibold">৳{(item.price * item.quantity).toFixed(2)}</div>
                   </div>
                 </div>
 

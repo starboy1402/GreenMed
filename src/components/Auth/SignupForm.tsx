@@ -1,4 +1,5 @@
-// SignupForm.tsx
+// File: src/components/Auth/SignupForm.tsx
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/api';
@@ -20,15 +20,13 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     name: '',
     email: '',
     password: '',
-    role: 'CUSTOMER', // Changed to uppercase
-    businessName: '',
+    userType: 'CUSTOMER',
+    shopName: '',
     phoneNumber: '',
     address: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,30 +35,17 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     setError('');
 
     try {
-      // The formData now sends the correct uppercase role
       await api.post('/auth/signup', formData);
       
-      setSuccess(true);
       toast({
-        title: "Success",
-        description: formData.role === 'SELLER' 
-          ? "Account created! Your seller application is pending approval."
-          : "Account created successfully! You can now log in.",
+        title: "Registration Successful!",
+        description: "Please log in with your new account.",
       });
 
-      // Clear form
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        role: 'CUSTOMER', // Reset to uppercase default
-        businessName: '',
-        phoneNumber: '',
-        address: ''
-      });
+      onSwitchToLogin();
       
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || 'Signup failed';
+      const errorMessage = error.response?.data?.message || 'Registration failed';
       setError(errorMessage);
       toast({
         title: "Error",
@@ -72,33 +57,12 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
     }
   };
 
-  if (success) {
-    return (
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl text-green-600">Success!</CardTitle>
-          <CardDescription>
-            {formData.role === 'SELLER' 
-              ? "Your seller application has been submitted and is pending approval."
-              : "Your account has been created successfully."
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button onClick={onSwitchToLogin} className="w-full">
-            Go to Login
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="text-center">
-        <CardTitle className="text-2xl">Create Account</CardTitle>
+        <CardTitle className="text-2xl">Create an Account</CardTitle>
         <CardDescription>
-          Join the Plant Management System
+          Join our community to manage your plants
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -109,27 +73,12 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
             </Alert>
           )}
 
-          <div className="space-y-2">
-            <Label htmlFor="role">Account Type</Label>
-            <Select
-              value={formData.role}
-              onValueChange={(value) => setFormData({ ...formData, role: value })}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {/* Values are now uppercase to match the backend enum */}
-                <SelectItem value="CUSTOMER">Customer</SelectItem>
-                <SelectItem value="SELLER">Seller</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
+          {/* --- Fields for all users --- */}
           <div className="space-y-2">
             <Label htmlFor="name">Full Name</Label>
             <Input
               id="name"
+              type="text"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
@@ -148,7 +97,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
               disabled={loading}
             />
           </div>
-
+          
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
@@ -158,45 +107,63 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSwitchToLogin }) => {
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
               disabled={loading}
-              minLength={6}
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="phoneNumber">Phone Number</Label>
+            <Input
+              id="phoneNumber"
+              type="text"
+              value={formData.phoneNumber}
+              onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+              required
+              disabled={loading}
             />
           </div>
 
-          {formData.role === 'SELLER' && (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="businessName">Business Name *</Label>
-                <Input
-                  id="businessName"
-                  value={formData.businessName}
-                  onChange={(e) => setFormData({ ...formData, businessName: e.target.value })}
-                  required
-                  disabled={loading}
-                />
-              </div>
+          <div className="space-y-2">
+            <Label htmlFor="address">Address</Label>
+            <Input
+              id="address"
+              type="text"
+              value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+              required
+              disabled={loading}
+            />
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phoneNumber">Phone Number *</Label>
-                <Input
-                  id="phoneNumber"
-                  value={formData.phoneNumber}
-                  onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                  required
-                  disabled={loading}
-                />
-              </div>
+          <div className="space-y-2">
+            <Label htmlFor="userType">Register as</Label>
+            <Select
+              value={formData.userType}
+              onValueChange={(value) => setFormData({ ...formData, userType: value })}
+              disabled={loading}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="CUSTOMER">Customer</SelectItem>
+                <SelectItem value="SELLER">Seller</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="address">Business Address</Label>
-                <Textarea
-                  id="address"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  disabled={loading}
-                  rows={3}
-                />
-              </div>
-            </>
+          {/* --- Conditional field ONLY for Sellers --- */}
+          {formData.userType === 'SELLER' && (
+            <div className="space-y-2">
+              <Label htmlFor="shopName">Shop Name</Label>
+              <Input
+                id="shopName"
+                type="text"
+                value={formData.shopName}
+                onChange={(e) => setFormData({ ...formData, shopName: e.target.value })}
+                required
+                disabled={loading}
+              />
+            </div>
           )}
 
           <Button type="submit" className="w-full" disabled={loading}>

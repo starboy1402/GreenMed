@@ -1,63 +1,36 @@
-// ProtectedRoute.tsx
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth, UserRole } from '@/context/AuthContext';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Shield } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRole?: UserRole;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requiredRole }) => {
-  const { user, role } = useAuth();
+const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
+  // --- Start of Fix ---
+  // Destructure userType instead of role
+  const { user, userType, loading } = useAuth();
+  // --- End of Fix ---
+  const location = useLocation();
 
-  // If no user is logged in, redirect to auth page
+  if (loading) {
+    return <div>Loading...</div>; // Or a spinner component
+  }
+
   if (!user) {
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // If a specific role is required and user doesn't have it
-  if (requiredRole && role !== requiredRole) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Alert className="max-w-md">
-          <Shield className="h-4 w-4" />
-          <AlertDescription>
-            You don't have permission to access this page. Required role: {requiredRole}.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
+  // --- Start of Fix ---
+  // Check against userType
+  if (requiredRole && userType !== requiredRole) {
+    return <Navigate to="/" replace />; // Or to an 'unauthorized' page
   }
+  // --- End of Fix ---
 
-  // If user is a seller and not approved, show pending message
-  if (role === 'seller' && user.applicationStatus === 'pending') {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Alert className="max-w-md">
-          <Shield className="h-4 w-4" />
-          <AlertDescription>
-            Your seller application is still pending approval. Please wait for admin approval.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
-
-  // If user is a seller and rejected
-  if (role === 'seller' && user.applicationStatus === 'rejected') {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <Alert variant="destructive" className="max-w-md">
-          <Shield className="h-4 w-4" />
-          <AlertDescription>
-            Your seller application was rejected. Please contact support for more information.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
+  // Handle pending sellers trying to access the seller dashboard
+  if (userType === 'seller' && user.applicationStatus === 'pending') {
+    return <div>Your seller application is pending approval.</div>; // Or a dedicated pending page
   }
 
   return <>{children}</>;

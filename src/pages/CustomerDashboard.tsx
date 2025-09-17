@@ -7,15 +7,15 @@ import { Badge } from '@/components/ui/badge';
 
 const CustomerDashboard = () => {
   const recentOrders = [
-    { id: '#ORD-001', date: '2024-01-15', items: 3, total: '$45.99', status: 'Delivered' },
-    { id: '#ORD-002', date: '2024-01-10', items: 1, total: '$12.50', status: 'Processing' },
-    { id: '#ORD-003', date: '2024-01-05', items: 2, total: '$28.75', status: 'Shipped' },
+    { id: '#ORD-001', date: '2024-01-15', items: 3, total: '৳45.99', status: 'Delivered' },
+    { id: '#ORD-002', date: '2024-01-10', items: 1, total: '৳12.50', status: 'Processing' },
+    { id: '#ORD-003', date: '2024-01-05', items: 2, total: '৳28.75', status: 'Shipped' },
   ];
 
-  const featuredPlants = [
-    { name: 'Rose Bush', category: 'Flower', price: '$15.99' },
-    { name: 'Tomato Plant', category: 'Vegetable', price: '$8.50' },
-    { name: 'Lavender', category: 'Herb', price: '$12.00' },
+    const featuredPlants = [
+      { name: 'Rose Bush', category: 'Flower', price: '৳15.99' },
+      { name: 'Tomato Plant', category: 'Vegetable', price: '৳8.50' },
+      { name: 'Lavender', category: 'Herb', price: '৳12.00' },
   ];
 
   const getStatusColor = (status: string) => {

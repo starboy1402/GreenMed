@@ -1,86 +1,40 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { api } from '@/lib/api';
 
 export type UserRole = 'admin' | 'seller' | 'customer';
 
-interface User {
+export interface User {
   id: string;
   name: string;
   email: string;
-  role: UserRole;
+  // This is the key change: from 'role' to 'userType'
+  userType: UserRole; 
+  isActive: boolean;
+  shopName?: string;
   applicationStatus?: 'pending' | 'approved' | 'rejected';
-  businessName?: string;
-  phoneNumber?: string;
-  address?: string;
 }
 
 interface AuthContextType {
   user: User | null;
-  role: UserRole;
-  setUser: (user: User | null) => void;
-  setRole: (role: UserRole) => void;
-  logout: () => void;
+  // Change from 'role' to 'userType'
+  userType: UserRole | null;
   loading: boolean;
+  setUser: (user: User | null) => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<UserRole>('customer');
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const [user, setUserState] = useState<User | null>(null);
+  // Change from 'role' to 'userType'
+  const [userType, setUserType] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check for existing token and validate
-    const checkAuth = async () => {
-      const token = localStorage.getItem('authToken');
-      if (token) {
-        try {
-          // Verify token with backend
-          const response = await api.get('/auth/me', {
-            headers: { Authorization: `Bearer ${token}` }
-          });
-          
-          const userData = response.data.data;
-          setUser(userData);
-          setRole(userData.role);
-        } catch (error) {
-          // Token is invalid, clear it
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('user');
-          localStorage.removeItem('role');
-        }
-      }
-      setLoading(false);
-    };
-
-    checkAuth();
-  }, []);
-
-  const handleSetUser = (newUser: User | null) => {
-    setUser(newUser);
-    if (newUser) {
-      localStorage.setItem('user', JSON.stringify(newUser));
-      localStorage.setItem('role', newUser.role);
-      setRole(newUser.role);
-    } else {
-      localStorage.removeItem('user');
-      localStorage.removeItem('role');
-      localStorage.removeItem('authToken');
-    }
-  };
-
-  const handleSetRole = (newRole: UserRole) => {
-    setRole(newRole);
-    localStorage.setItem('role', newRole);
+  const setUser = (userData: User | null) => {
+    setUserState(userData);
+    // Set userType from the user data
+    setUserType(userData ? userData.userType : null);
   };
 
   const logout = async () => {
@@ -91,30 +45,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           headers: { Authorization: `Bearer ${token}` }
         });
       } catch (error) {
-        // Even if logout fails on backend, clear frontend
-        console.error('Logout error:', error);
+        console.error("Logout failed", error);
       }
     }
-    
     setUser(null);
-    setRole('customer');
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
     localStorage.removeItem('authToken');
   };
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        try {
+          const response = await api.get('/auth/me', {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setUser(response.data);
+        } catch (error) {
+          localStorage.removeItem('authToken');
+          setUser(null);
+        }
+      }
+      setLoading(false);
+    };
+    checkAuth();
+  }, []);
+
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        role, 
-        setUser: handleSetUser, 
-        setRole: handleSetRole, 
-        logout,
-        loading
-      }}
-    >
+    <AuthContext.Provider value={{ user, userType, loading, setUser, logout }}>
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

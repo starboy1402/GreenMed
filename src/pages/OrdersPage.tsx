@@ -219,7 +219,7 @@ const OrdersPage = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${orders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}
+             ৳{orders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}
             </div>
           </CardContent>
         </Card>
@@ -252,7 +252,7 @@ const OrdersPage = () => {
                     {order.status}
                   </Badge>
                   <div className="text-lg font-bold mt-1">
-                    ${order.totalAmount.toFixed(2)}
+                   ৳{order.totalAmount.toFixed(2)}
                   </div>
                 </div>
               </div>
@@ -275,10 +275,10 @@ const OrdersPage = () => {
                     </div>
                     <div className="text-right">
                       <div className="font-medium">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ৳{(item.price * item.quantity).toFixed(2)}
                       </div>
                       <div className="text-xs text-muted-foreground">
-                        ${item.price.toFixed(2)} each
+                        ৳{item.price.toFixed(2)} each
                       </div>
                     </div>
                   </div>

@@ -175,7 +175,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="price">Price per Unit ($) *</Label>
+          <Label htmlFor="price">Price per Unit (৳) *</Label>
           <Input
             id="price"
             type="number"
@@ -235,7 +235,7 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
           <div>
             <span className="text-muted-foreground">Item Value:</span>
             <span className="ml-2 font-medium">
-              ${(formData.price * formData.quantity).toFixed(2)}
+              ৳{(formData.price * formData.quantity).toFixed(2)}
             </span>
           </div>
           <div>
