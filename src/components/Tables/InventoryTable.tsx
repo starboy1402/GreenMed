@@ -23,11 +23,13 @@ interface InventoryItem {
 interface InventoryTableProps {
   inventory?: InventoryItem[];
   onUpdate?: () => void;
+  onEdit: (item: InventoryItem) => void; 
 }
 
 const InventoryTable: React.FC<InventoryTableProps> = ({ 
   inventory = [], 
-  onUpdate 
+  onUpdate,
+  onEdit,
 }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValues, setEditValues] = useState<{quantity: number, price: number}>({
@@ -244,7 +246,7 @@ const InventoryTable: React.FC<InventoryTableProps> = ({
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => startEdit(item)}
+                          onClick={() => onEdit(item)}
                         >
                           <Edit className="h-3 w-3" />
                         </Button>

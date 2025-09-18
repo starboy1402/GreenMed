@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,14 +8,9 @@ import { useToast } from '@/hooks/use-toast';
 import { inventoryApi } from '@/lib/api';
 import { Loader2 } from 'lucide-react';
 
-interface InventoryFormProps {
-  onClose: () => void;
-  onSuccess?: () => void;
-  initialData?: InventoryFormData;
-  isEdit?: boolean;
-}
-
-interface InventoryFormData {
+// The InventoryItem now includes an optional id
+interface InventoryItem {
+  id?: string;
   name: string;
   type: string;
   price: number;
@@ -26,33 +21,40 @@ interface InventoryFormData {
   unit: string;
 }
 
-const InventoryForm: React.FC<InventoryFormProps> = ({ 
-  onClose, 
-  onSuccess, 
+interface InventoryFormProps {
+  onClose: () => void;
+  onSuccess?: () => void;
+  initialData?: InventoryItem; // This will be used for editing
+}
+
+const InventoryForm: React.FC<InventoryFormProps> = ({
+  onClose,
+  onSuccess,
   initialData,
-  isEdit = false 
 }) => {
-  const [formData, setFormData] = useState<InventoryFormData>({
-    name: initialData?.name || '',
-    type: initialData?.type || '',
-    price: initialData?.price || 0,
-    quantity: initialData?.quantity || 0,
-    description: initialData?.description || '',
-    lowStockThreshold: initialData?.lowStockThreshold || 10,
-    sku: initialData?.sku || '',
-    unit: initialData?.unit || 'pieces',
+  const [formData, setFormData] = useState<InventoryItem>({
+    name: '',
+    type: '',
+    price: 0,
+    quantity: 0,
+    description: '',
+    lowStockThreshold: 10,
+    sku: '',
+    unit: 'pieces',
+    ...initialData,
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const isEdit = !!initialData; // Determine if we are in "edit" mode
 
-  const handleChange = (field: keyof InventoryFormData, value: string | number) => {
+  const handleChange = (field: keyof InventoryItem, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!formData.name || !formData.type || formData.price <= 0) {
       toast({
@@ -63,35 +65,23 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
       return;
     }
 
-    if (formData.quantity < 0 || formData.lowStockThreshold < 0) {
-      toast({
-        title: "Validation Error", 
-        description: "Quantities cannot be negative.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
-      if (isEdit) {
-        // In a real app, would need the item ID for updates
-        // await inventoryApi.update(itemId, formData);
+      if (isEdit && formData.id) {
+        await inventoryApi.update(formData.id, formData);
         toast({
           title: "Success",
           description: "Inventory item updated successfully!",
-          variant: "default"
         });
       } else {
         await inventoryApi.create(formData);
         toast({
           title: "Success",
           description: "Inventory item added successfully!",
-          variant: "default"
         });
       }
-      
+
       onSuccess?.();
       onClose();
     } catch (error) {
@@ -131,8 +121,8 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
 
         <div className="space-y-2">
           <Label htmlFor="type">Item Type *</Label>
-          <Select 
-            value={formData.type} 
+          <Select
+            value={formData.type}
             onValueChange={(value) => handleChange('type', value)}
           >
             <SelectTrigger>
@@ -154,8 +144,8 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
 
         <div className="space-y-2">
           <Label htmlFor="unit">Unit of Measurement</Label>
-          <Select 
-            value={formData.unit} 
+          <Select
+            value={formData.unit}
             onValueChange={(value) => handleChange('unit', value)}
           >
             <SelectTrigger>
@@ -226,29 +216,6 @@ const InventoryForm: React.FC<InventoryFormProps> = ({
           placeholder="Brief description of the item..."
           rows={3}
         />
-      </div>
-
-      {/* Summary */}
-      <div className="p-4 bg-muted/50 rounded-lg border">
-        <h4 className="font-medium mb-2">Summary</h4>
-        <div className="grid grid-cols-2 gap-2 text-sm">
-          <div>
-            <span className="text-muted-foreground">Item Value:</span>
-            <span className="ml-2 font-medium">
-              ৳{(formData.price * formData.quantity).toFixed(2)}
-            </span>
-          </div>
-          <div>
-            <span className="text-muted-foreground">Stock Status:</span>
-            <span className={`ml-2 font-medium ${
-              formData.quantity <= formData.lowStockThreshold 
-                ? 'text-yellow-600' 
-                : 'text-green-600'
-            }`}>
-              {formData.quantity <= formData.lowStockThreshold ? 'Low Stock' : 'In Stock'}
-            </span>
-          </div>
-        </div>
       </div>
 
       <div className="flex items-center justify-end space-x-2">

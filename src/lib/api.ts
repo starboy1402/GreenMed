@@ -10,10 +10,9 @@ export const api = axios.create({
   },
 });
 
-// Request interceptor for auth tokens (if needed)
+// Request interceptor for auth tokens
 api.interceptors.request.use(
   (config) => {
-    // Add auth token to requests if available
     const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -54,9 +53,7 @@ export const medicineApi = {
 };
 
 export const sellerApi = {
-  // Updated to point to the new admin endpoint for pending sellers
   getPending: () => api.get('/admin/sellers/pending'),
-  // Corrected to use PUT and the correct endpoint
   approve: (sellerId: string) => api.put(`/admin/sellers/${sellerId}/approve`),
   reject: (sellerId: string) => api.put(`/admin/sellers/${sellerId}/reject`),
 };
@@ -67,8 +64,10 @@ export const adminApi = {
 };
 
 export const inventoryApi = {
-  getBySeller: (sellerId: string) => api.get(`/inventory/${sellerId}`),
+  // We're using a GET request here, as defined in the InventoryController
+  getBySeller: () => api.get('/inventory'),
   create: (data: any) => api.post('/inventory', data),
+  // The sellerId is not needed here because the backend gets it from the authenticated user
   update: (inventoryId: string, data: any) => api.put(`/inventory/${inventoryId}`, data),
 };
 
