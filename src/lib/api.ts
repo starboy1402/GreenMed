@@ -85,5 +85,10 @@ export const paymentApi = {
         api.post(`/payment/order/${orderId}`, paymentData),
 };
 
+// Add the new dashboardApi
+export const dashboardApi = {
+  getAdminStats: () => api.get('/dashboard/admin-stats'),
+};
+
 export default api;
 

@@ -12,8 +12,18 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
-    
-    // Add this new query
+
     @Query("SELECT u FROM User u WHERE u.userType = 'SELLER' AND u.applicationStatus = 'APPROVED'")
     List<User> findActiveSellers();
+
+    // New queries for the dashboard
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userType = 'CUSTOMER'")
+    long countTotalCustomers();
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userType = 'SELLER'")
+    long countTotalSellers();
+
+    @Query("SELECT COUNT(u) FROM User u WHERE u.userType = 'SELLER' AND u.applicationStatus = 'PENDING'")
+    long countPendingSellers();
 }
+

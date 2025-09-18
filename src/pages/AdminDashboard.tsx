@@ -1,262 +1,160 @@
-import React, { useState } from 'react';
-import { Plus, Users, Leaf, Pill, CheckCircle, XCircle } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Users, User, ShoppingCart, UserCheck, Leaf, Pill, Bug, Plus, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { dashboardApi } from '@/lib/api';
+import PendingSellersTable from '@/components/Tables/PendingSellersTable';
 import PlantForm from '@/components/Forms/PlantForm';
 import DiseaseForm from '@/components/Forms/DiseaseForm';
 import MedicineForm from '@/components/Forms/MedicineForm';
-import PendingSellersTable from '@/components/Tables/PendingSellersTable';
+import { Skeleton } from '@/components/ui/skeleton';
+
+interface AdminStats {
+  totalCustomers: number;
+  totalSellers: number;
+  totalOrders: number;
+  pendingSellers: number;
+}
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [showPlantForm, setShowPlantForm] = useState(false);
-  const [showDiseaseForm, setShowDiseaseForm] = useState(false);
-  const [showMedicineForm, setShowMedicineForm] = useState(false);
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState<'plant' | 'disease' | 'medicine' | null>(null);
   const { toast } = useToast();
 
-  const stats = [
-    {
-      title: 'Total Plants',
-      value: '1,234',
-      change: '+12%',
-      icon: Leaf,
-      color: 'text-success'
-    },
-    {
-      title: 'Pending Sellers',
-      value: '23',
-      change: '+5',
-      icon: Users,
-      color: 'text-warning'
-    },
-    {
-      title: 'Active Medicines',
-      value: '456',
-      change: '+8%',
-      icon: Pill,
-      color: 'text-accent'
-    },
-    {
-      title: 'System Health',
-      value: '98%',
-      change: 'Optimal',
-      icon: CheckCircle,
-      color: 'text-success'
+  const fetchStats = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await dashboardApi.getAdminStats();
+      setStats(response.data);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load dashboard statistics.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  }, [toast]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  const handleFormSuccess = () => {
+    setShowForm(null);
+    toast({ title: "Success", description: "Catalog item added successfully." });
+  };
 
   return (
     <div className="space-y-6 animate-grow-in">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
-          <p className="text-muted-foreground">
-            Manage plants, diseases, medicines, and approve sellers
-          </p>
-        </div>
-        <Badge variant="outline" className="px-4 py-2">
-          Administrator
-        </Badge>
-      </div>
+      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <Card key={stat.title} className="hover:shadow-medium transition-smooth">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {stat.title}
-              </CardTitle>
-              <stat.icon className={`h-4 w-4 ${stat.color}`} />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">
-                {stat.change} from last month
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {/* Main Content Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="plants">Plants</TabsTrigger>
-          <TabsTrigger value="diseases">Diseases</TabsTrigger>
-          <TabsTrigger value="sellers">Sellers</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="hover:shadow-medium transition-smooth">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Leaf className="h-5 w-5 text-success" />
-                  <span>Recent Plants</span>
-                </CardTitle>
-                <CardDescription>
-                  Latest additions to the plant catalog
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {['Rose Bush', 'Tomato Plant', 'Oak Tree'].map((plant) => (
-                    <div key={plant} className="flex items-center justify-between">
-                      <span className="text-sm">{plant}</span>
-                      <Badge variant="secondary">New</Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-medium transition-smooth">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Users className="h-5 w-5 text-warning" />
-                  <span>Pending Actions</span>
-                </CardTitle>
-                <CardDescription>
-                  Items requiring your attention
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Seller Applications</span>
-                    <Badge variant="outline">23</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">Plant Approvals</span>
-                    <Badge variant="outline">5</Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm">System Updates</span>
-                    <Badge variant="outline">2</Badge>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="hover:shadow-medium transition-smooth">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <CheckCircle className="h-5 w-5 text-success" />
-                  <span>Quick Actions</span>
-                </CardTitle>
-                <CardDescription>
-                  Common administrative tasks
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button 
-                  onClick={() => setShowPlantForm(true)}
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full justify-start"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add New Plant
-                </Button>
-                <Button 
-                  onClick={() => setShowDiseaseForm(true)}
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full justify-start"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Disease
-                </Button>
-                <Button 
-                  onClick={() => setShowMedicineForm(true)}
-                  variant="outline" 
-                  size="sm" 
-                  className="w-full justify-start"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Medicine
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="plants" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Plant Management</h3>
-            <Button onClick={() => setShowPlantForm(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Plant
-            </Button>
-          </div>
-          {showPlantForm && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Add New Plant</CardTitle>
-                <CardDescription>
-                  Add a new plant to the system catalog
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <PlantForm onClose={() => setShowPlantForm(false)} />
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="diseases" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Disease Management</h3>
-            <Button onClick={() => setShowDiseaseForm(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Disease
-            </Button>
-          </div>
-          {showDiseaseForm && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Add New Disease</CardTitle>
-                <CardDescription>
-                  Register a new plant disease in the system
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <DiseaseForm onClose={() => setShowDiseaseForm(false)} />
-              </CardContent>
-            </Card>
-          )}
-        </TabsContent>
-
-        <TabsContent value="sellers" className="space-y-4">
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Seller Management</h3>
-            <PendingSellersTable />
-          </div>
-        </TabsContent>
-      </Tabs>
-
-      {/* Medicine Form Modal */}
-      {showMedicineForm && (
-        <Card className="fixed inset-4 z-50 max-w-2xl mx-auto bg-card shadow-strong">
-          <CardHeader>
-            <CardTitle>Add New Medicine</CardTitle>
-            <CardDescription>
-              Add a new medicine to the system
-            </CardDescription>
+      {/* Stat Cards */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <MedicineForm onClose={() => setShowMedicineForm(false)} />
+            {loading ? <Skeleton className="h-8 w-1/2" /> : (
+              <div className="text-2xl font-bold">{stats?.totalCustomers}</div>
+            )}
+            <p className="text-xs text-muted-foreground">Total registered customers</p>
           </CardContent>
         </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Sellers</CardTitle>
+            <User className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {loading ? <Skeleton className="h-8 w-1/2" /> : (
+              <div className="text-2xl font-bold">{stats?.totalSellers}</div>
+            )}
+            <p className="text-xs text-muted-foreground">All seller accounts</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {loading ? <Skeleton className="h-8 w-1/2" /> : (
+              <div className="text-2xl font-bold">+{stats?.totalOrders}</div>
+            )}
+            <p className="text-xs text-muted-foreground">Count of all paid orders</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Pending Sellers</CardTitle>
+            <UserCheck className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {loading ? <Skeleton className="h-8 w-1/2" /> : (
+              <div className="text-2xl font-bold">{stats?.pendingSellers}</div>
+            )}
+            <p className="text-xs text-muted-foreground">Applications awaiting review</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+          <CardDescription>Add new items to the global catalog.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-wrap gap-4">
+          <Button onClick={() => setShowForm('plant')}>
+            <Leaf className="mr-2 h-4 w-4" /> Add Plant
+          </Button>
+          <Button onClick={() => setShowForm('medicine')} variant="outline">
+            <Pill className="mr-2 h-4 w-4" /> Add Medicine
+          </Button>
+          <Button onClick={() => setShowForm('disease')} variant="outline">
+            <Bug className="mr-2 h-4 w-4" /> Add Disease
+          </Button>
+        </CardContent>
+      </Card>
+      
+      {/* Pending Sellers Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Pending Seller Applications</CardTitle>
+          <CardDescription>Review and approve or reject new seller sign-ups.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <PendingSellersTable onUpdate={fetchStats} />
+        </CardContent>
+      </Card>
+
+      {/* Add Item Forms Modal */}
+      {showForm && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
+            <Card className="w-full max-w-2xl animate-grow-in">
+              <CardHeader>
+                <div className="flex justify-between items-center">
+                  <CardTitle>Add New {showForm === 'plant' ? 'Plant' : showForm === 'medicine' ? 'Medicine' : 'Disease'}</CardTitle>
+                  <Button variant="ghost" size="icon" onClick={() => setShowForm(null)}><Plus className="h-4 w-4 rotate-45" /></Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {showForm === 'plant' && <PlantForm onClose={() => setShowForm(null)} onSuccess={handleFormSuccess} />}
+                {showForm === 'medicine' && <MedicineForm onClose={() => setShowForm(null)} onSuccess={handleFormSuccess} />}
+                {showForm === 'disease' && <DiseaseForm onClose={() => setShowForm(null)} onSuccess={handleFormSuccess} />}
+              </CardContent>
+            </Card>
+        </div>
       )}
     </div>
   );
 };
 
 export default AdminDashboard;
+

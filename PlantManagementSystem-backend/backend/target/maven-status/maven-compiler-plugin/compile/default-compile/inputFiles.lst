@@ -34,9 +34,12 @@ C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\garde
 C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\entity\Disease.java
 C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\controller\AuthController.java
 C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\dto\PaymentRequest.java
+C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\dto\AdminDashboardStatsDTO.java
+C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\controller\DashboardController.java
 C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\repository\OrderItemRepository.java
 C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\controller\OrderController.java
 C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\security\JwtAuthenticationEntryPoint.java
+C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\service\DashboardService.java
 C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\controller\MedicineController.java
 C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\service\AdminService.java
 C:\Users\alifs\Downloads\project\New folder\PlantManagementSystem-frontend\gardenwise-suite-main\PlantManagementSystem-backend\backend\src\main\java\com\plantmanagement\controller\AdminController.java
