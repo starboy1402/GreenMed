@@ -11,6 +11,7 @@ import com.plantmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.access.AccessDeniedException;   
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,7 +78,27 @@ public class OrderService {
         return orderRepository.findBySellerId(seller.getId());
     }
     
-    public Order updateOrderStatus(Long orderId, Order.OrderStatus status, String userEmail) {
+public Order processPayment(Long orderId, String customerEmail) throws AccessDeniedException {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        
+        User customer = userRepository.findByEmail(customerEmail)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+
+        // Security check: ensure the user paying is the one who created the order
+        if (!order.getCustomer().getId().equals(customer.getId())) {
+            throw new AccessDeniedException("You are not authorized to pay for this order.");
+        }
+
+        if (order.getStatus() == Order.OrderStatus.PENDING_PAYMENT) {
+            order.setStatus(Order.OrderStatus.PROCESSING);
+            return orderRepository.save(order);
+        } else {
+            throw new RuntimeException("Order is not pending payment.");
+        }
+    }
+
+    public Order updateOrderStatus(Long orderId, Order.OrderStatus status, String userEmail) throws AccessDeniedException {
         Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new RuntimeException("Order not found"));
             
@@ -86,7 +107,7 @@ public class OrderService {
             
         // Only the seller of the order or an admin can update the status
         if (!order.getSeller().getId().equals(user.getId()) && user.getUserType() != User.UserRole.ADMIN) {
-            throw new SecurityException("You are not authorized to update this order.");
+            throw new AccessDeniedException("You are not authorized to update this order.");
         }
             
         order.setStatus(status);

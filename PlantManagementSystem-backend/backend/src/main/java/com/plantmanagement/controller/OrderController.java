@@ -6,6 +6,7 @@ import com.plantmanagement.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -40,6 +41,19 @@ public class OrderController {
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public ResponseEntity<List<Order>> getSellerOrders(Principal principal) {
         return ResponseEntity.ok(orderService.getOrdersBySeller(principal.getName()));
+    }
+
+   @PostMapping("/{orderId}/pay")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<Order> payForOrder(@PathVariable Long orderId, Principal principal) {
+        try {
+            Order paidOrder = orderService.processPayment(orderId, principal.getName());
+            return ResponseEntity.ok(paidOrder);
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(403).build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @PutMapping("/{orderId}/status")
