@@ -51,6 +51,7 @@ const Navbar = () => {
     const publicItems = [
       { label: 'Plants', path: '/plants' },
       { label: 'Medicines', path: '/medicines' },
+      { label: 'Diseases', path: '/diseases' },
     ];
 
     if (!user) return publicItems;

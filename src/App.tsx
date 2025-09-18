@@ -18,6 +18,7 @@ import InventoryPage from "./pages/InventoryPage";
 import SellersPage from "./pages/SellersPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
+import DiseasesPage from "./pages/DiseasesPage";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
                       <Route path="/" element={<Index />} />
                       <Route path="/plants" element={<PlantsPage />} />
                       <Route path="/medicines" element={<MedicinesPage />} />
+                      <Route path="/diseases" element={<DiseasesPage />} />
                       
                       {/* Protected routes */}
                       <Route path="/admin" element={
