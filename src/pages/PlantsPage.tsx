@@ -31,62 +31,6 @@ const PlantsPage = () => {
   const [rateFilter, setRateFilter] = useState('all');
   const { toast } = useToast();
 
-  // Mock data for demonstration
-  const mockPlants: Plant[] = [
-    {
-      id: '1',
-      name: 'Rose Bush',
-      scientificName: 'Rosa rubiginosa',
-      category: 'flower',
-      description: 'Beautiful flowering shrub with fragrant blooms and thorny stems.',
-      growthSeason: 'spring',
-      growthRate: 'medium',
-      waterRequirements: 'medium',
-      lightRequirements: 'full-sun',
-      soilType: 'well-draining',
-      careInstructions: 'Prune in late winter, water regularly during growing season.'
-    },
-    {
-      id: '2',
-      name: 'Tomato Plant',
-      scientificName: 'Solanum lycopersicum',
-      category: 'vegetable',
-      description: 'Productive vegetable plant producing nutritious red fruits.',
-      growthSeason: 'summer',
-      growthRate: 'fast',
-      waterRequirements: 'high',
-      lightRequirements: 'full-sun',
-      soilType: 'loam',
-      careInstructions: 'Support with stakes, water consistently, fertilize regularly.'
-    },
-    {
-      id: '3',
-      name: 'Lavender',
-      scientificName: 'Lavandula angustifolia',
-      category: 'herb',
-      description: 'Aromatic herb with purple flowers, perfect for relaxation and cooking.',
-      growthSeason: 'spring',
-      growthRate: 'slow',
-      waterRequirements: 'low',
-      lightRequirements: 'full-sun',
-      soilType: 'sandy',
-      careInstructions: 'Drought tolerant once established, prune after flowering.'
-    },
-    {
-      id: '4',
-      name: 'Apple Tree',
-      scientificName: 'Malus domestica',
-      category: 'fruit',
-      description: 'Deciduous fruit tree producing crisp, sweet apples.',
-      growthSeason: 'spring',
-      growthRate: 'medium',
-      waterRequirements: 'medium',
-      lightRequirements: 'full-sun',
-      soilType: 'well-draining',
-      careInstructions: 'Prune in dormant season, thin fruit for better quality.'
-    }
-  ];
-
   useEffect(() => {
     loadPlants();
   }, []);
@@ -94,22 +38,15 @@ const PlantsPage = () => {
   const loadPlants = async () => {
     try {
       setLoading(true);
-      // In a real app, this would call the API
-      // const response = await plantApi.getAll();
-      // setPlants(response.data);
-      
-      // Using mock data for demonstration
-      setTimeout(() => {
-        setPlants(mockPlants);
-        setLoading(false);
-      }, 1000);
+      const response = await plantApi.getAll();
+      setPlants(response.data);
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load plants",
         variant: "destructive"
       });
-      setPlants(mockPlants); // Fallback to mock data
+    } finally {
       setLoading(false);
     }
   };
@@ -120,7 +57,7 @@ const PlantsPage = () => {
     const matchesCategory = categoryFilter === 'all' || plant.category === categoryFilter;
     const matchesSeason = seasonFilter === 'all' || plant.growthSeason === seasonFilter;
     const matchesRate = rateFilter === 'all' || plant.growthRate === rateFilter;
-    
+
     return matchesSearch && matchesCategory && matchesSeason && matchesRate;
   });
 

@@ -37,6 +37,7 @@ api.interceptors.response.use(
 export const plantApi = {
   getAll: () => api.get('/plants'),
   create: (data: any) => api.post('/plants', data),
+  // We'll add this for future filtering functionality
   getByFilters: (params: any) => api.get('/plants', { params }),
 };
 
@@ -64,10 +65,8 @@ export const adminApi = {
 };
 
 export const inventoryApi = {
-  // We're using a GET request here, as defined in the InventoryController
   getBySeller: () => api.get('/inventory'),
   create: (data: any) => api.post('/inventory', data),
-  // The sellerId is not needed here because the backend gets it from the authenticated user
   update: (inventoryId: string, data: any) => api.put(`/inventory/${inventoryId}`, data),
 };
 

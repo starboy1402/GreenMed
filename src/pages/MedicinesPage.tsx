@@ -29,58 +29,6 @@ const MedicinesPage = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const { toast } = useToast();
 
-  // Mock data for demonstration
-  const mockMedicines: Medicine[] = [
-    {
-      id: '1',
-      name: 'FungiCure Pro',
-      type: 'fungicide',
-      activeIngredient: 'Copper Sulfate',
-      description: 'Effective broad-spectrum fungicide for controlling various plant diseases.',
-      dosage: '2-3 ml per liter of water',
-      applicationMethod: 'spray',
-      targetDiseases: 'Powdery Mildew, Black Spot, Rust',
-      safetyInstructions: 'Wear gloves and eye protection. Apply in cool weather.',
-      manufacturer: 'PlantCare Solutions'
-    },
-    {
-      id: '2',
-      name: 'GreenGuard Insecticide',
-      type: 'insecticide',
-      activeIngredient: 'Neem Oil',
-      description: 'Organic insecticide effective against soft-bodied insects.',
-      dosage: '5 ml per liter of water',
-      applicationMethod: 'spray',
-      targetDiseases: 'Aphids, Whiteflies, Scale Insects',
-      safetyInstructions: 'Safe for beneficial insects when used as directed.',
-      manufacturer: 'EcoPlant Inc.'
-    },
-    {
-      id: '3',
-      name: 'Root Boost Fertilizer',
-      type: 'fertilizer',
-      activeIngredient: 'NPK 10-10-10',
-      description: 'Balanced fertilizer for healthy root development and overall plant growth.',
-      dosage: '1 tablespoon per plant',
-      applicationMethod: 'granular',
-      targetDiseases: 'Nutrient Deficiency, Poor Growth',
-      safetyInstructions: 'Water thoroughly after application. Keep away from children.',
-      manufacturer: 'Garden Pro'
-    },
-    {
-      id: '4',
-      name: 'BioShield Bactericide',
-      type: 'bactericide',
-      activeIngredient: 'Streptomycin',
-      description: 'Antibiotic treatment for bacterial infections in plants.',
-      dosage: '1 gram per liter of water',
-      applicationMethod: 'spray',
-      targetDiseases: 'Fire Blight, Bacterial Wilt, Soft Rot',
-      safetyInstructions: 'Use protective equipment. Follow withdrawal periods.',
-      manufacturer: 'AgriScience Labs'
-    }
-  ];
-
   useEffect(() => {
     loadMedicines();
   }, []);
@@ -88,22 +36,15 @@ const MedicinesPage = () => {
   const loadMedicines = async () => {
     try {
       setLoading(true);
-      // In a real app, this would call the API
-      // const response = await medicineApi.getAll();
-      // setMedicines(response.data);
-      
-      // Using mock data for demonstration
-      setTimeout(() => {
-        setMedicines(mockMedicines);
-        setLoading(false);
-      }, 1000);
+      const response = await medicineApi.getAll();
+      setMedicines(response.data);
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load medicines",
         variant: "destructive"
       });
-      setMedicines(mockMedicines);
+    } finally {
       setLoading(false);
     }
   };
@@ -113,7 +54,7 @@ const MedicinesPage = () => {
                          medicine.activeIngredient.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          medicine.targetDiseases.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || medicine.type === typeFilter;
-    
+
     return matchesSearch && matchesType;
   });
 
