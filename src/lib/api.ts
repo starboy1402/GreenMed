@@ -75,9 +75,10 @@ export const sellsApi = {
 };
 
 export const orderApi = {
-  getByCustomer: (customerId: string) => api.get(`/orders/${customerId}`),
-  getBySeller: (sellerId: string) => api.get(`/orders/seller/${sellerId}`),
-  create: (data: any) => api.post('/orders', data),
+  create: (orderData: { sellerId: string; items: { inventoryItemId: string; quantity: number }[] }) => 
+    api.post('/orders', orderData),
+  getByCustomer: () => api.get('/orders/customer'), // Updated to not require customerId
+  getBySeller: () => api.get('/orders/seller'), // Updated to not require sellerId
   getDetails: (orderId: string) => api.get(`/orderdetails/${orderId}`),
 };
 

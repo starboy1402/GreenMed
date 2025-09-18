@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {  Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Layout/Navbar";
 import Index from "./pages/Index";
@@ -19,6 +19,8 @@ import SellersPage from "./pages/SellersPage";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import DiseasesPage from "./pages/DiseasesPage";
+import SellersDisplayPage from "./pages/SellersDisplayPage";
+import SellerShopPage from "./pages/SellerShopPage";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +30,7 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        
           <div className="min-h-screen bg-gradient-subtle">
             <Routes>
               {/* Public routes */}
@@ -44,7 +46,10 @@ const App = () => (
                       <Route path="/plants" element={<PlantsPage />} />
                       <Route path="/medicines" element={<MedicinesPage />} />
                       <Route path="/diseases" element={<DiseasesPage />} />
-                      
+                       <Route path="/sellers" element={<SellersDisplayPage />} />
+                      <Route path="/sellers/:sellerId" element={<SellerShopPage />} /> 
+
+                  
                       {/* Protected routes */}
                       <Route path="/admin" element={
                         <ProtectedRoute requiredRole="admin">
@@ -89,7 +94,7 @@ const App = () => (
               } />
             </Routes>
           </div>
-        </BrowserRouter>
+       
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

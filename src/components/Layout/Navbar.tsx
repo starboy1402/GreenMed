@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth, UserRole } from '@/context/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { CartSheet } from './CartSheet';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -52,23 +53,34 @@ const Navbar = () => {
       { label: 'Plants', path: '/plants' },
       { label: 'Medicines', path: '/medicines' },
       { label: 'Diseases', path: '/diseases' },
+      { label: 'Sellers', path: '/sellers' }, // Moved Sellers to be public
     ];
 
     if (!user) return publicItems;
 
-    const privateItems = [
-      { label: 'Orders', path: '/orders' },
-    ];
+    // Customers see public items + their orders
+    if (userType === 'customer') {
+      return [...publicItems, { label: 'My Orders', path: '/orders' }];
+    }
 
+    // Sellers see a different set of links
     if (userType === 'seller') {
-      privateItems.push({ label: 'Inventory', path: '/inventory' });
+      return [
+        { label: 'Dashboard', path: '/seller' },
+        { label: 'Inventory', path: '/inventory' },
+        { label: 'Orders', path: '/orders' },
+      ];
+    }
+    
+    // Admins see their own set of links
+     if (userType === 'admin') {
+      return [
+        { label: 'Dashboard', path: '/admin' },
+        { label: 'Manage Sellers', path: '/sellers-management' }, // A dedicated page for admins
+      ];
     }
 
-    if (userType === 'admin') {
-      privateItems.push({ label: 'Sellers', path: '/sellers' });
-    }
-
-    return [...publicItems, ...privateItems];
+    return publicItems;
   };
 
   const getRoleColor = (currentUserType: UserRole | null) => {
@@ -82,21 +94,12 @@ const Navbar = () => {
 
   if (loading) {
     return (
-      <nav className="bg-card border-b border-border">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Leaf className="h-8 w-8 text-primary animate-pulse" />
-              <span className="text-xl font-bold">Plant Management</span>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <nav className="bg-card border-b border-border h-16" />
     );
   }
 
   return (
-    <nav className="bg-card border-b border-border shadow-sm">
+    <nav className="bg-background/80 backdrop-blur-md sticky top-0 z-40 border-b">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -104,7 +107,7 @@ const Navbar = () => {
             <div className="h-8 w-8 rounded-full bg-gradient-primary flex items-center justify-center">
               <Leaf className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">Plant Management</span>
+            <span className="text-xl font-bold text-foreground">GreenMed</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -121,15 +124,9 @@ const Navbar = () => {
           </div>
 
           {/* Right side */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-2">
             {user ? (
               <div className="flex items-center space-x-3">
-                {/* Dashboard Link */}
-                <Button asChild variant="ghost">
-                  <Link to={getDashboardLink()}>Dashboard</Link>
-                </Button>
-
-                {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex items-center space-x-2">
@@ -144,7 +141,7 @@ const Navbar = () => {
                     <DropdownMenuItem asChild>
                       <Link to={getDashboardLink()}>
                         <User className="mr-2 h-4 w-4" />
-                        Profile
+                        Dashboard
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
@@ -165,10 +162,12 @@ const Navbar = () => {
                 </Button>
               </div>
             )}
+            <CartSheet />
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center gap-2">
+            <CartSheet />
             <Button
               variant="ghost"
               size="sm"

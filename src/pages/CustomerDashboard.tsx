@@ -1,29 +1,70 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Leaf, Package, ShoppingCart, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { api, orderApi } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Interfaces to match backend data structure
+interface OrderItem {
+    inventoryItem: { name: string; };
+    quantity: number;
+    price: number;
+}
+interface Order {
+  id: number;
+  orderDate: string;
+  totalAmount: number;
+  status: string;
+  items: OrderItem[];
+}
+
+interface Plant {
+    id: string;
+    name: string;
+    category: string;
+    price: string; // Assuming price comes from somewhere
+}
 
 const CustomerDashboard = () => {
-  const recentOrders = [
-    { id: '#ORD-001', date: '2024-01-15', items: 3, total: '৳45.99', status: 'Delivered' },
-    { id: '#ORD-002', date: '2024-01-10', items: 1, total: '৳12.50', status: 'Processing' },
-    { id: '#ORD-003', date: '2024-01-05', items: 2, total: '৳28.75', status: 'Shipped' },
-  ];
+    const [recentOrders, setRecentOrders] = useState<Order[]>([]);
+    const [featuredPlants, setFeaturedPlants] = useState<Plant[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
 
-    const featuredPlants = [
-      { name: 'Rose Bush', category: 'Flower', price: '৳15.99' },
-      { name: 'Tomato Plant', category: 'Vegetable', price: '৳8.50' },
-      { name: 'Lavender', category: 'Herb', price: '৳12.00' },
-  ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [ordersRes, plantsRes] = await Promise.all([
+                    orderApi.getByCustomer(),
+                    api.get('/plants') // Assuming a general endpoint for featured plants
+                ]);
+                // Take the 3 most recent orders
+                setRecentOrders(ordersRes.data.slice(0, 3));
+                // Take the first 3 plants as featured
+                setFeaturedPlants(plantsRes.data.slice(0, 3).map((p: any) => ({...p, price: '15.99'}))); // Mocking price for now
+            } catch (error) {
+                toast({
+                    title: "Error",
+                    description: "Could not load dashboard data.",
+                    variant: "destructive"
+                });
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [toast]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Delivered': return 'bg-success text-success-foreground';
-      case 'Processing': return 'bg-warning text-warning-foreground';
-      case 'Shipped': return 'bg-accent text-accent-foreground';
-      default: return 'bg-secondary text-secondary-foreground';
+      case 'DELIVERED': return 'bg-green-100 text-green-800';
+      case 'PROCESSING': return 'bg-yellow-100 text-yellow-800';
+      case 'SHIPPED': return 'bg-blue-100 text-blue-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
   };
 
@@ -45,28 +86,25 @@ const CustomerDashboard = () => {
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Button asChild variant="outline" className="h-20 flex-col space-y-2">
-          <Link to="/plants">
-            <Leaf className="h-6 w-6" />
-            <span>Browse Plants</span>
+          <Link to="/sellers">
+            <Store className="h-6 w-6" />
+            <span>Browse Sellers</span>
           </Link>
         </Button>
-        
         <Button asChild variant="outline" className="h-20 flex-col space-y-2">
           <Link to="/medicines">
             <Package className="h-6 w-6" />
             <span>Find Medicines</span>
           </Link>
         </Button>
-        
         <Button asChild variant="outline" className="h-20 flex-col space-y-2">
           <Link to="/orders">
             <ShoppingCart className="h-6 w-6" />
             <span>My Orders</span>
           </Link>
         </Button>
-        
         <Button asChild variant="outline" className="h-20 flex-col space-y-2">
-          <Link to="/plants">
+          <Link to="/diseases">
             <Search className="h-6 w-6" />
             <span>Disease Lookup</span>
           </Link>
@@ -88,24 +126,33 @@ const CustomerDashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
-                  <div>
-                    <div className="font-medium">{order.id}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {order.date} • {order.items} item(s)
+            {loading ? (
+                <div className="space-y-4">
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                </div>
+            ) : recentOrders.length > 0 ? (
+              <div className="space-y-4">
+                {recentOrders.map((order) => (
+                  <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
+                    <div>
+                      <div className="font-medium">Order #{order.id}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {new Date(order.orderDate).toLocaleDateString()} • {order.items.length} item(s)
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium">৳{order.totalAmount.toFixed(2)}</div>
+                      <Badge className={getStatusColor(order.status)}>
+                        {order.status.replace('_', ' ')}
+                      </Badge>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-medium">{order.total}</div>
-                    <Badge className={getStatusColor(order.status)}>
-                      {order.status}
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">No recent orders found.</p>
+            )}
           </CardContent>
         </Card>
 
@@ -123,61 +170,39 @@ const CustomerDashboard = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {featuredPlants.map((plant) => (
-                <div key={plant.name} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
-                  <div>
-                    <div className="font-medium">{plant.name}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {plant.category}
+           {loading ? (
+                <div className="space-y-4">
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                </div>
+            ) : featuredPlants.length > 0 ? (
+              <div className="space-y-4">
+                {featuredPlants.map((plant) => (
+                  <div key={plant.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
+                    <div>
+                      <div className="font-medium">{plant.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {plant.category}
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium text-primary">৳{plant.price}</div>
+                      <Button size="sm" variant="outline" asChild>
+                        <Link to="/plants">View Details</Link>
+                      </Button>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="font-medium text-primary">{plant.price}</div>
-                    <Button size="sm" variant="outline">
-                      View Details
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+                <p className="text-sm text-muted-foreground text-center py-4">No featured plants available.</p>
+            )}
           </CardContent>
         </Card>
       </div>
-
-      {/* Plant Care Tips */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Plant Care Tips</CardTitle>
-          <CardDescription>
-            Essential tips for healthy plant growth
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-              <h4 className="font-medium text-primary mb-2">Watering Schedule</h4>
-              <p className="text-sm text-muted-foreground">
-                Check soil moisture before watering. Most plants prefer slightly dry soil between waterings.
-              </p>
-            </div>
-            <div className="p-4 rounded-lg bg-success/5 border border-success/20">
-              <h4 className="font-medium text-success mb-2">Light Requirements</h4>
-              <p className="text-sm text-muted-foreground">
-                Place plants according to their light needs. Observe and adjust position as seasons change.
-              </p>
-            </div>
-            <div className="p-4 rounded-lg bg-accent/5 border border-accent/20">
-              <h4 className="font-medium text-accent mb-2">Disease Prevention</h4>
-              <p className="text-sm text-muted-foreground">
-                Inspect plants regularly for signs of disease. Early detection prevents spread to other plants.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
 
 export default CustomerDashboard;
+import { Store } from 'lucide-react';

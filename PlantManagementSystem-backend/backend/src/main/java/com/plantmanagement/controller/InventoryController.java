@@ -24,6 +24,12 @@ public class InventoryController {
     public ResponseEntity<List<Inventory>> getSellerInventory(Principal principal) {
         return ResponseEntity.ok(inventoryService.getInventoryBySeller(principal.getName()));
     }
+    
+    // This is the new public endpoint
+    @GetMapping("/seller/{sellerId}")
+    public ResponseEntity<List<Inventory>> getInventoryBySellerId(@PathVariable Long sellerId) {
+        return ResponseEntity.ok(inventoryService.getInventoryBySellerId(sellerId));
+    }
 
     @PostMapping
     @PreAuthorize("hasRole('SELLER')")

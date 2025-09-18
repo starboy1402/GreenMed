@@ -1,147 +1,234 @@
-// File: src/pages/OrdersPage.tsx
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import { orderApi } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { api } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { PackageSearch, ShoppingBag } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-// Define types for Order data based on your backend structure
+// --- Type Definitions ---
+
+// Matches the backend OrderItem entity
 interface OrderItem {
-  id: number;
-  itemName: string;
+  inventoryItem: {
+    name: string;
+  };
   quantity: number;
   price: number;
 }
 
+// Matches the backend Order entity
 interface Order {
   id: number;
   orderDate: string;
+  status: 'PENDING_PAYMENT' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   totalAmount: number;
-  status: string;
-  customerName?: string; // For sellers
   items: OrderItem[];
+  customer: {
+      name: string;
+      email: string;
+  };
+  seller: {
+    shopName: string;
+  };
 }
 
 const OrdersPage = () => {
-  // The correct way to get user and userType from the context
-  const { user, userType } = useAuth();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
+    const { user } = useAuth();
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      if (!user || !userType) return;
+    // --- Data Fetching ---
 
-      setLoading(true);
-      try {
-        let response;
-        if (userType === 'customer') {
-          // Assuming your orderApi is set up in lib/api.ts
-          response = await api.get(`/orders/customer/${user.id}`);
-        } else if (userType === 'seller') {
-          response = await api.get(`/orders/seller/${user.id}`);
-        } else {
-          // For admin or other roles, maybe fetch all orders
-          // For now, we'll just leave it empty
-          response = { data: [] };
+    const fetchOrders = useCallback(async () => {
+        if (!user) return;
+        setLoading(true);
+        try {
+            // Fetch orders based on user role
+            const apiCall = (user as any).role === 'SELLER' ? orderApi.getBySeller : orderApi.getByCustomer;
+            const response = await apiCall();
+            // Sort orders from newest to oldest
+            setOrders(response.data.sort((a: Order, b: Order) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime()));
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: "Failed to fetch your orders.",
+                variant: "destructive"
+            });
+        } finally {
+            setLoading(false);
         }
-        setOrders(response.data);
-      } catch (error) {
+    }, [user, toast]);
+
+    useEffect(() => {
+        fetchOrders();
+    }, [fetchOrders]);
+
+    // --- Event Handlers ---
+
+    const handleStatusUpdate = async (orderId: number, newStatus: Order['status']) => {
+        try {
+            // This will require a new API function
+            // await orderApi.updateStatus(orderId, newStatus);
+            toast({
+                title: "Success",
+                description: `Order #${orderId} has been updated to ${newStatus}.`
+            });
+            // Refresh the orders list
+            fetchOrders();
+        } catch (error) {
+             toast({
+                title: "Update Failed",
+                description: "Could not update the order status.",
+                variant: "destructive"
+            });
+        }
+    };
+    
+    const handlePayment = (orderId: number) => {
         toast({
-          title: "Error",
-          description: "Failed to fetch orders.",
-          variant: "destructive",
+            title: "Payment Gateway",
+            description: `Redirecting to payment for order #${orderId}... (Simulation)`
         });
-      } finally {
-        setLoading(false);
-      }
+        // Here you would integrate a real payment gateway like Stripe or Paddle
     };
 
-    fetchOrders();
-  }, [user, userType, toast]);
+    // --- UI Helper Functions ---
+    
+    const getStatusBadgeVariant = (status: Order['status']) => {
+        switch (status) {
+            case 'PENDING_PAYMENT': return 'destructive';
+            case 'PROCESSING': return 'default';
+            case 'SHIPPED': return 'secondary';
+            case 'DELIVERED': return 'default'; // Success variant would be good here
+            case 'CANCELLED': return 'outline';
+            default: return 'secondary';
+        }
+    };
 
-  const getStatusBadgeVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
-    switch (status?.toLowerCase()) {
-      case 'delivered': return 'secondary';
-      case 'shipped': return 'default';
-      case 'processing': return 'secondary';
-      case 'cancelled': return 'destructive';
-      default: return 'outline';
+    // --- Render Logic ---
+
+    if (loading) {
+        return (
+            <div className="text-center p-12">
+                <p className="text-muted-foreground">Loading your orders...</p>
+            </div>
+        );
     }
-  };
-  
-  if (loading) {
-    return (
-      <div className="container mx-auto p-4 space-y-4">
-        <Skeleton className="h-12 w-1/4" />
-        <Skeleton className="h-8 w-1/2" />
-        <div className="space-y-4">
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-          <Skeleton className="h-24 w-full" />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="container mx-auto p-4 animate-grow-in">
-      <h1 className="text-3xl font-bold mb-2">My Orders</h1>
-      <p className="text-muted-foreground mb-6">
-        View and manage your order history.
-      </p>
-
-      {orders.length > 0 ? (
-        <Accordion type="single" collapsible className="w-full space-y-4">
-          {orders.map((order) => (
-            <Card key={order.id} className="overflow-hidden">
-              <AccordionItem value={`item-${order.id}`} className="border-b-0">
-                <AccordionTrigger className="p-4 hover:no-underline bg-muted/50">
-                  <div className="flex justify-between items-center w-full">
-                    <div className="text-left">
-                      <p className="font-bold text-lg">Order #{order.id}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(order.orderDate).toLocaleDateString()}
-                      </p>
-                      {userType === 'seller' && order.customerName && (
-                         <p className="text-sm text-muted-foreground">Customer: {order.customerName}</p>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <p className="font-semibold text-lg">৳{order.totalAmount.toFixed(2)}</p>
-                      <Badge variant={getStatusBadgeVariant(order.status)}>{order.status}</Badge>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="p-4 border-t">
-                  <h4 className="font-semibold mb-2">Order Details:</h4>
-                  <ul className="space-y-2">
-                    {order.items.map(item => (
-                      <li key={item.id} className="flex justify-between items-center text-sm">
-                        <span>{item.itemName} (x{item.quantity})</span>
-                        <span className="font-medium">৳{(item.price * item.quantity).toFixed(2)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
+    
+    if (orders.length === 0) {
+        return (
+            <Card className="text-center py-12">
+                <CardHeader>
+                    <PackageSearch className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <CardTitle>No Orders Found</CardTitle>
+                    <CardDescription>
+                        {(user as any)?.role === 'CUSTOMER' 
+                            ? "You haven't placed any orders yet. Start shopping!"
+                            : "You have no incoming orders at the moment."
+                        }
+                    </CardDescription>
+                </CardHeader>
             </Card>
-          ))}
-        </Accordion>
-      ) : (
-        <Card>
-          <CardContent className="p-10 text-center">
-            <p className="text-muted-foreground">You have no orders yet.</p>
-          </CardContent>
-        </Card>
-      )}
-    </div>
-  );
+        );
+    }
+
+    return (
+        <div className="space-y-6 animate-grow-in">
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-bold">
+                        {(user as any)?.role === 'SELLER' ? 'Incoming Orders' : 'My Orders'}
+                    </h1>
+                    <p className="text-muted-foreground">
+                        View and manage your order history below.
+                    </p>
+                </div>
+                <ShoppingBag className="h-8 w-8 text-primary" />
+            </div>
+
+            <Card>
+                <CardContent className="p-0">
+                    <Accordion type="single" collapsible className="w-full">
+                        {orders.map(order => (
+                            <AccordionItem value={`order-${order.id}`} key={order.id}>
+                                <AccordionTrigger className="px-6 hover:bg-muted/50">
+                                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center w-full text-left">
+                                        <div className="flex-1">
+                                            <p className="font-bold">Order #{order.id}</p>
+                                            <p className="text-sm text-muted-foreground">
+                                                {new Date(order.orderDate).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                        <div className="flex-1 my-2 md:my-0 text-center">
+                                            <p className="text-sm text-muted-foreground">Total</p>
+                                            <p className="font-semibold">৳{order.totalAmount.toFixed(2)}</p>
+                                        </div>
+                                        <div className="flex-1 text-right">
+                                            <Badge variant={getStatusBadgeVariant(order.status)}>
+                                                {order.status.replace('_', ' ')}
+                                            </Badge>
+                                        </div>
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent className="bg-muted/20 px-6 pt-4 pb-6">
+                                    <div className="space-y-4">
+                                        {(user as any)?.role === 'SELLER' && (
+                                            <div className="p-2 bg-background rounded-md">
+                                                <p className="text-sm font-medium">Customer: {order.customer.name}</p>
+                                                <p className="text-xs text-muted-foreground">{order.customer.email}</p>
+                                            </div>
+                                        )}
+                                        {order.items.map((item, index) => (
+                                            <div key={index} className="flex justify-between py-2 border-b">
+                                                <div>
+                                                    <p className="font-medium">{item.inventoryItem.name}</p>
+                                                    <p className="text-xs text-muted-foreground">
+                                                        {item.quantity} x ৳{item.price.toFixed(2)}
+                                                    </p>
+                                                </div>
+                                                <p className="font-semibold">
+                                                    ৳{(item.price * item.quantity).toFixed(2)}
+                                                </p>
+                                            </div>
+                                        ))}
+                                        {/* --- Action Buttons --- */}
+                                        <div className="flex justify-end items-center mt-4">
+                                            {(user as any)?.role === 'CUSTOMER' && order.status === 'PENDING_PAYMENT' && (
+                                                <Button size="sm" onClick={() => handlePayment(order.id)}>
+                                                    Pay Now
+                                                </Button>
+                                            )}
+                                            {(user as any)?.role === 'SELLER' && (
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-sm font-medium">Update Status:</span>
+                                                    <Select onValueChange={(value) => handleStatusUpdate(order.id, value as Order['status'])}>
+                                                        <SelectTrigger className="w-[180px]">
+                                                            <SelectValue placeholder={order.status.replace('_', ' ')} />
+                                                        </SelectTrigger>
+                                                        <SelectContent>
+                                                            <SelectItem value="PROCESSING">Processing</SelectItem>
+                                                            <SelectItem value="SHIPPED">Shipped</SelectItem>
+                                                            <SelectItem value="DELIVERED">Delivered</SelectItem>
+                                                            <SelectItem value="CANCELLED">Cancelled</SelectItem>
+                                                        </SelectContent>
+                                                    </Select>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
+                </CardContent>
+            </Card>
+        </div>
+    );
 };
 
 export default OrdersPage;

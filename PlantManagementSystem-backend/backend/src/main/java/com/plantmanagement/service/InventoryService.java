@@ -53,4 +53,7 @@ public class InventoryService {
 
         return inventoryRepository.save(existingItem);
     }
+     public List<Inventory> getInventoryBySellerId(Long sellerId) {
+        return inventoryRepository.findBySellerId(sellerId);
+    }
 }
