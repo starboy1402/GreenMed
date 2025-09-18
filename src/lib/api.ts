@@ -88,6 +88,7 @@ export const paymentApi = {
 // Add the new dashboardApi
 export const dashboardApi = {
   getAdminStats: () => api.get('/dashboard/admin-stats'),
+  getSellerStats: () => api.get('/dashboard/seller-stats'), // Add this new function
 };
 
 export default api;
