@@ -44,7 +44,7 @@ export const plantApi = {
 export const diseaseApi = {
   getAll: () => api.get('/diseases'),
   create: (data: any) => api.post('/diseases', data),
-  search: (plantId?: string, symptom?: string) => 
+  search: (plantId?: string, symptom?: string) =>
     api.get('/diseases/search', { params: { plant_id: plantId, symptom } }),
 };
 
@@ -54,9 +54,11 @@ export const medicineApi = {
 };
 
 export const sellerApi = {
-  getPending: () => api.get('/sellers/pending'),
-  approve: (sellerId: string) => api.put(`/sellers/${sellerId}/approve`),
-  reject: (sellerId: string) => api.put(`/sellers/${sellerId}/reject`),
+  // Updated to point to the new admin endpoint for pending sellers
+  getPending: () => api.get('/admin/sellers/pending'),
+  // Corrected to use PUT and the correct endpoint
+  approve: (sellerId: string) => api.put(`/admin/sellers/${sellerId}/approve`),
+  reject: (sellerId: string) => api.put(`/admin/sellers/${sellerId}/reject`),
 };
 
 export const adminApi = {

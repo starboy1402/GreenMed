@@ -6,16 +6,16 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { sellerApi } from '@/lib/api';
 
+// This interface now matches the UserResponse DTO from the backend
 interface Seller {
   id: string;
   name: string;
   email: string;
-  businessName: string;
-  phone: string;
+  shopName: string; // Renamed from businessName
+  phoneNumber: string; // Renamed from phone
   address: string;
-  status: 'pending' | 'approved' | 'rejected';
-  appliedDate: string;
-  documents?: string[];
+  applicationStatus: 'pending' | 'approved' | 'rejected'; // Renamed from status
+  // appliedDate and documents are not in the UserResponse, so they are removed for now
 }
 
 interface PendingSellersTableProps {
@@ -27,43 +27,6 @@ const PendingSellersTable: React.FC<PendingSellersTableProps> = ({ onUpdate }) =
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Mock data for demonstration
-  const mockSellers: Seller[] = [
-    {
-      id: 'SELL-001',
-      name: 'Alice Johnson',
-      email: 'alice@greenthumb.com',
-      businessName: 'GreenThumb Gardens',
-      phone: '+1-555-0123',
-      address: '123 Garden St, Plant City, PC 12345',
-      status: 'pending',
-      appliedDate: '2024-01-10',
-      documents: ['business_license.pdf', 'tax_certificate.pdf']
-    },
-    {
-      id: 'SELL-002',
-      name: 'Bob Smith',
-      email: 'bob@ecogardens.com',
-      businessName: 'Eco Gardens Supply',
-      phone: '+1-555-0456',
-      address: '456 Nature Ave, Green Valley, GV 67890',
-      status: 'pending',
-      appliedDate: '2024-01-12',
-      documents: ['business_registration.pdf']
-    },
-    {
-      id: 'SELL-003',
-      name: 'Carol Davis',
-      email: 'carol@plantparadise.com',
-      businessName: 'Plant Paradise',
-      phone: '+1-555-0789',
-      address: '789 Flora Blvd, Bloom Town, BT 54321',
-      status: 'pending',
-      appliedDate: '2024-01-14',
-      documents: ['license.pdf', 'insurance.pdf', 'references.pdf']
-    }
-  ];
-
   useEffect(() => {
     loadSellers();
   }, []);
@@ -71,40 +34,29 @@ const PendingSellersTable: React.FC<PendingSellersTableProps> = ({ onUpdate }) =
   const loadSellers = async () => {
     try {
       setLoading(true);
-      
-      // In a real app, this would call the API
-      // const response = await sellerApi.getPending();
-      // setSellers(response.data);
-      
-      // Using mock data for demonstration
-      setTimeout(() => {
-        setSellers(mockSellers);
-        setLoading(false);
-      }, 1000);
+      // Fetching real data from the backend
+      const response = await sellerApi.getPending();
+      setSellers(response.data);
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load pending sellers",
         variant: "destructive"
       });
-      setSellers(mockSellers);
+    } finally {
       setLoading(false);
     }
   };
 
   const handleApprove = async (sellerId: string) => {
     try {
-      // await sellerApi.approve(sellerId);
-      
-      setSellers(prev => prev.filter(seller => seller.id !== sellerId));
-      
+      await sellerApi.approve(sellerId);
       toast({
         title: "Success",
         description: "Seller approved successfully!",
-        variant: "default"
       });
-      
-      onUpdate?.();
+      onUpdate?.(); // This will re-fetch the list
+      loadSellers(); // Re-fetch the list to update the UI
     } catch (error) {
       toast({
         title: "Error",
@@ -116,25 +68,22 @@ const PendingSellersTable: React.FC<PendingSellersTableProps> = ({ onUpdate }) =
 
   const handleReject = async (sellerId: string) => {
     try {
-      // await sellerApi.reject(sellerId);
-      
-      setSellers(prev => prev.filter(seller => seller.id !== sellerId));
-      
+      await sellerApi.reject(sellerId);
       toast({
         title: "Success",
         description: "Seller application rejected",
-        variant: "default"
       });
-      
-      onUpdate?.();
+      onUpdate?.(); // This will re-fetch the list
+      loadSellers(); // Re-fetch the list to update the UI
     } catch (error) {
       toast({
-        title: "Error", 
+        title: "Error",
         description: "Failed to reject seller",
         variant: "destructive"
       });
     }
   };
+
 
   if (loading) {
     return (
@@ -165,7 +114,7 @@ const PendingSellersTable: React.FC<PendingSellersTableProps> = ({ onUpdate }) =
               {/* Seller Information */}
               <div className="flex-1 space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold">{seller.businessName}</h3>
+                  <h3 className="text-lg font-semibold">{seller.shopName}</h3>
                   <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
                     Pending Review
                   </Badge>
@@ -188,12 +137,7 @@ const PendingSellersTable: React.FC<PendingSellersTableProps> = ({ onUpdate }) =
                   <div className="flex items-center space-x-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">Phone:</span>
-                    <span>{seller.phone}</span>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <span className="text-muted-foreground">Applied:</span>
-                    <span>{new Date(seller.appliedDate).toLocaleDateString()}</span>
+                    <span>{seller.phoneNumber}</span>
                   </div>
                 </div>
                 
@@ -204,22 +148,6 @@ const PendingSellersTable: React.FC<PendingSellersTableProps> = ({ onUpdate }) =
                     <p className="text-sm">{seller.address}</p>
                   </div>
                 </div>
-
-                {seller.documents && seller.documents.length > 0 && (
-                  <div className="flex items-start space-x-2">
-                    <FileText className="h-4 w-4 text-muted-foreground mt-0.5" />
-                    <div>
-                      <span className="text-muted-foreground text-sm">Documents:</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {seller.documents.map((doc, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
-                            {doc}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
               
               {/* Action Buttons */}

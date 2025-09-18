@@ -5,6 +5,7 @@ import com.plantmanagement.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity; // Import this
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,6 +23,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@EnableMethodSecurity // Add this annotation
 public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -40,7 +42,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN") // This rule is now active
                 .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
                 .requestMatchers("/api/customer/**").hasAnyRole("CUSTOMER", "ADMIN")
                 .anyRequest().authenticated()
@@ -55,26 +57,19 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Allow specific origins (your frontend)
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:8081",
             "http://127.0.0.1:8081",
-            "http://localhost:3000", // Common React dev server port
-            "http://127.0.0.1:3000"  // Alternative localhost format
+            "http://localhost:3000",
+            "http://127.0.0.1:3000"
         ));
         
-        // Allow all HTTP methods
         configuration.setAllowedMethods(Arrays.asList(
             "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
         ));
         
-        // Allow all headers
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        
-        // Allow credentials (cookies, authorization headers)
         configuration.setAllowCredentials(true);
-        
-        // Cache preflight response for 1 hour
         configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
