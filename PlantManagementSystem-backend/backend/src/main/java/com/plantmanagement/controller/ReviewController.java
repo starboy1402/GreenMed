@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -39,5 +40,17 @@ public class ReviewController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/seller/{sellerId}/rating")
+    public ResponseEntity<Map<String, Object>> getSellerRating(@PathVariable Long sellerId) {
+        double averageRating = reviewService.getAverageRatingForSeller(sellerId);
+        int totalReviews = reviewService.getTotalReviewsForSeller(sellerId);
+        
+        Map<String, Object> ratingData = new HashMap<>();
+        ratingData.put("averageRating", averageRating);
+        ratingData.put("totalReviews", totalReviews);
+        
+        return ResponseEntity.ok(ratingData);
     }
 }

@@ -2,11 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { DollarSign, Package, ShoppingCart, AlertTriangle, ListOrdered, ClipboardList } from 'lucide-react';
+import { DollarSign, Package, ShoppingCart, AlertTriangle, ListOrdered, ClipboardList, Star } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { dashboardApi } from '@/lib/api';
+import { dashboardApi, reviewApi } from '@/lib/api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { useAuth } from '@/context/AuthContext';
 
 // --- Type Definitions ---
 interface Order {
@@ -27,10 +28,17 @@ interface SellerStats {
   recentOrders: Order[];
 }
 
+interface SellerRating {
+  averageRating: number;
+  totalReviews: number;
+}
+
 const SellerDashboard = () => {
   const [stats, setStats] = useState<SellerStats | null>(null);
+  const [rating, setRating] = useState<SellerRating | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const fetchStats = useCallback(async () => {
     try {
@@ -48,9 +56,22 @@ const SellerDashboard = () => {
     }
   }, [toast]);
 
+  const fetchRating = useCallback(async () => {
+    if (!user?.id) return;
+    
+    try {
+      const response = await reviewApi.getSellerRating(user.id.toString());
+      setRating(response.data);
+    } catch (error) {
+      console.log('No rating data available yet');
+      setRating({ averageRating: 0, totalReviews: 0 });
+    }
+  }, [user]);
+
   useEffect(() => {
     fetchStats();
-  }, [fetchStats]);
+    fetchRating();
+  }, [fetchStats, fetchRating]);
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -68,7 +89,7 @@ const SellerDashboard = () => {
       <h1 className="text-3xl font-bold">Seller Dashboard</h1>
 
       {/* Stat Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -115,6 +136,23 @@ const SellerDashboard = () => {
               <div className="text-2xl font-bold">{stats?.totalProducts}</div>
             )}
             <p className="text-xs text-muted-foreground">Items in your inventory</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Shop Rating</CardTitle>
+            <Star className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {loading ? <Skeleton className="h-8 w-1/2" /> : (
+              <div className="text-2xl font-bold text-yellow-600">
+                {rating?.averageRating.toFixed(1) || '0.0'}
+                <span className="text-sm text-muted-foreground ml-1">/5</span>
+              </div>
+            )}
+            <p className="text-xs text-muted-foreground">
+              {rating?.totalReviews || 0} customer reviews
+            </p>
           </CardContent>
         </Card>
       </div>
