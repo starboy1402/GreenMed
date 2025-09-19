@@ -58,7 +58,7 @@ const SellerDashboard = () => {
 
   const fetchRating = useCallback(async () => {
     if (!user?.id) return;
-    
+
     try {
       const response = await reviewApi.getSellerRating(user.id.toString());
       setRating(response.data);
@@ -75,12 +75,12 @@ const SellerDashboard = () => {
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-        case 'PENDING_PAYMENT': return 'destructive';
-        case 'PROCESSING': return 'default';
-        case 'SHIPPED': return 'secondary';
-        case 'DELIVERED': return 'default';
-        case 'CANCELLED': return 'outline';
-        default: return 'secondary';
+      case 'PENDING_PAYMENT': return 'destructive';
+      case 'PROCESSING': return 'default';
+      case 'SHIPPED': return 'secondary';
+      case 'DELIVERED': return 'default';
+      case 'CANCELLED': return 'outline';
+      default: return 'secondary';
     }
   };
 
@@ -160,26 +160,26 @@ const SellerDashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Quick Actions */}
         <Card className="lg:col-span-1">
-            <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Manage your shop's core functions.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <Button asChild className="w-full justify-start text-base py-6">
-                    <Link to="/inventory">
-                        <ClipboardList className="mr-4 h-5 w-5" />
-                        Manage Inventory
-                    </Link>
-                </Button>
-                <Button asChild variant="outline" className="w-full justify-start text-base py-6">
-                    <Link to="/orders">
-                        <ListOrdered className="mr-4 h-5 w-5" />
-                        View All Orders
-                    </Link>
-                </Button>
-            </CardContent>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Manage your shop's core functions.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button asChild className="w-full justify-start text-base py-6">
+              <Link to="/inventory">
+                <ClipboardList className="mr-4 h-5 w-5" />
+                Manage Inventory
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="w-full justify-start text-base py-6">
+              <Link to="/orders">
+                <ListOrdered className="mr-4 h-5 w-5" />
+                View All Orders
+              </Link>
+            </Button>
+          </CardContent>
         </Card>
-        
+
         {/* Recent Orders Table */}
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -188,31 +188,31 @@ const SellerDashboard = () => {
           </CardHeader>
           <CardContent>
             {loading ? (
-                <div className="space-y-2">
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                </div>
+              <div className="space-y-2">
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+                <Skeleton className="h-10 w-full" />
+              </div>
             ) : stats && stats.recentOrders.length > 0 ? (
-                <div className="space-y-4">
-                  {stats.recentOrders.map((order) => (
-                    <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
-                      <div>
-                        <div className="font-medium">Order #{order.id}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {order.customer.name} - {new Date(order.orderDate).toLocaleDateString()}
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">৳{order.totalAmount.toFixed(2)}</div>
-                        <Badge variant={getStatusBadgeVariant(order.status)}>
-                            {order.status.replace('_', ' ')}
-                        </Badge>
+              <div className="space-y-4">
+                {stats.recentOrders.map((order) => (
+                  <div key={order.id} className="flex items-center justify-between p-3 rounded-lg border bg-muted/30">
+                    <div>
+                      <div className="font-medium">Order #{order.id}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {order.customer.name} - {new Date(order.orderDate).toLocaleDateString()}
                       </div>
                     </div>
-                  ))}
-                </div>
-              ) : (
+                    <div className="text-right">
+                      <div className="font-medium">৳{order.totalAmount.toFixed(2)}</div>
+                      <Badge variant={getStatusBadgeVariant(order.status)}>
+                        {order.status.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
               <div className="text-center py-8 text-muted-foreground">
                 <p>No recent orders found.</p>
               </div>

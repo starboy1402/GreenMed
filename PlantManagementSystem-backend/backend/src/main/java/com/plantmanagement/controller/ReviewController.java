@@ -46,11 +46,11 @@ public class ReviewController {
     public ResponseEntity<Map<String, Object>> getSellerRating(@PathVariable Long sellerId) {
         double averageRating = reviewService.getAverageRatingForSeller(sellerId);
         int totalReviews = reviewService.getTotalReviewsForSeller(sellerId);
-        
+
         Map<String, Object> ratingData = new HashMap<>();
         ratingData.put("averageRating", averageRating);
         ratingData.put("totalReviews", totalReviews);
-        
+
         return ResponseEntity.ok(ratingData);
     }
 }

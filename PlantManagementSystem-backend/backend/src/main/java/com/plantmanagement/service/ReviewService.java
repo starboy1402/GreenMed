@@ -52,24 +52,24 @@ public class ReviewService {
     public double getAverageRatingForSeller(Long sellerId) {
         User seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new RuntimeException("Seller not found"));
-        
+
         List<Review> reviews = reviewRepository.findBySeller(seller);
-        
+
         if (reviews.isEmpty()) {
             return 0.0;
         }
-        
+
         double sum = reviews.stream()
                 .mapToDouble(Review::getRating)
                 .sum();
-        
+
         return Math.round((sum / reviews.size()) * 10.0) / 10.0; // Round to 1 decimal place
     }
 
     public int getTotalReviewsForSeller(Long sellerId) {
         User seller = userRepository.findById(sellerId)
                 .orElseThrow(() -> new RuntimeException("Seller not found"));
-        
+
         return reviewRepository.findBySeller(seller).size();
     }
 }
