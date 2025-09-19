@@ -148,7 +148,7 @@ const AdminDashboard = () => {
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Pending Sellers Table */}
       <Card>
         <CardHeader>
@@ -163,19 +163,19 @@ const AdminDashboard = () => {
       {/* Add Item Forms Modal */}
       {showForm && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
-            <Card className="w-full max-w-2xl animate-grow-in">
-              <CardHeader>
-                <div className="flex justify-between items-center">
-                  <CardTitle>Add New {showForm === 'plant' ? 'Plant' : showForm === 'medicine' ? 'Medicine' : 'Disease'}</CardTitle>
-                  <Button variant="ghost" size="icon" onClick={() => setShowForm(null)}><Plus className="h-4 w-4 rotate-45" /></Button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {showForm === 'plant' && <PlantForm onClose={() => setShowForm(null)} onSuccess={handleFormSuccess} />}
-                {showForm === 'medicine' && <MedicineForm onClose={() => setShowForm(null)} onSuccess={handleFormSuccess} />}
-                {showForm === 'disease' && <DiseaseForm onClose={() => setShowForm(null)} onSuccess={handleFormSuccess} />}
-              </CardContent>
-            </Card>
+          <Card className="w-full max-w-2xl animate-grow-in">
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle>Add New {showForm === 'plant' ? 'Plant' : showForm === 'medicine' ? 'Medicine' : 'Disease'}</CardTitle>
+                <Button variant="ghost" size="icon" onClick={() => setShowForm(null)}><Plus className="h-4 w-4 rotate-45" /></Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {showForm === 'plant' && <PlantForm onClose={() => setShowForm(null)} onSuccess={handleFormSuccess} />}
+              {showForm === 'medicine' && <MedicineForm onClose={() => setShowForm(null)} onSuccess={handleFormSuccess} />}
+              {showForm === 'disease' && <DiseaseForm onClose={() => setShowForm(null)} onSuccess={handleFormSuccess} />}
+            </CardContent>
+          </Card>
         </div>
       )}
     </div>
