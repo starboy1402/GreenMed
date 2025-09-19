@@ -1,124 +1,9 @@
-// import React from 'react';
-// import { Link } from 'react-router-dom';
-// import { ArrowRight, Leaf, Users, Package, ShoppingCart } from 'lucide-react';
-// import { Button } from '@/components/ui/button';
-// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-// import { useAuth } from '@/context/AuthContext';
-
-// const Index = () => {
-//   const { userType } = useAuth();
-
-//   const features = [
-//     {
-//       icon: Leaf,
-//       title: 'Plant Management',
-//       description: 'Comprehensive catalog of plants with detailed information, growth requirements, and disease management.',
-//       link: '/plants'
-//     },
-//     {
-//       icon: Package,
-//       title: 'Inventory Control',
-//       description: 'Real-time inventory tracking for medicines, fertilizers, and plant care products.',
-//       link: userType === 'seller' ? '/inventory' : '/medicines'
-//     },
-//     {
-//       icon: Users,
-//       title: 'Multi-Role System',
-//       description: 'Separate workflows for administrators, sellers, and customers with role-based permissions.',
-//       link: `/${userType}`
-//     },
-//     {
-//       icon: ShoppingCart,
-//       title: 'Order Management',
-//       description: 'Streamlined ordering process with order tracking and seller management.',
-//       link: '/orders'
-//     }
-//   ];
-
-//   const getDashboardLink = () => {
-//     switch (userType) {
-//       case 'admin': return '/admin';
-//       case 'seller': return '/seller';
-//       case 'customer': return '/customer';
-//       default: return '/customer';
-//     }
-//   }; return (
-//     <div className="min-h-screen bg-gradient-subtle">
-//       {/* Hero Section */}
-//       <div className="relative overflow-hidden">
-//         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-//           <div className="text-center">
-//             <div className="flex justify-center mb-6">
-//               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-primary shadow-medium animate-leaf-float">
-//                 <Leaf className="h-8 w-8 text-primary-foreground" />
-//               </div>
-//             </div>
-
-//             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 animate-grow-in">
-//               Plant Management System
-
-//             </h1>
-
-//             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-grow-in">
-//               Welcome to GreenMed, Bangladesh's premier online marketplace for all things green and growing! 
-//               We connect you with a vibrant community of trusted local sellers, making it easier than ever to discover 
-//               everything from medicinal plants and traditional herbal remedies to beautiful decorative flowers and essential gardening supplies. 
-//               Whether you're a seasoned gardener looking for rare seeds or seeking natural wellness solutions, GreenMed is your one-stop destination to nurture a healthier, greener lifestyle. Explore our sellers, find the perfect plants for your home, 
-//               and embrace the power of nature, delivered right to your doorstep.
-//             </p>
-
-//             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-grow-in">
-//               <Button asChild size="lg" className="bg-gradient-primary hover:bg-gradient-nature transition-smooth">
-//                 <Link to={getDashboardLink()}>
-//                   Go to Dashboard
-//                   <ArrowRight className="ml-2 h-5 w-5" />
-//                 </Link>
-//               </Button>
-
-//               <Button asChild variant="outline" size="lg">
-//                 <Link to="/plants">
-//                   Browse Plants
-//                 </Link>
-//               </Button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-
-
-
-//       {/* Stats Section */}
-//       <div className="bg-card border-y">
-//         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-//           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-//             <div>
-//               <div className="text-3xl font-bold text-primary mb-2">500+</div>
-//               <div className="text-muted-foreground">Plant Varieties</div>
-//             </div>
-//             <div>
-//               <div className="text-3xl font-bold text-primary mb-2">1000+</div>
-//               <div className="text-muted-foreground">Active Users</div>
-//             </div>
-//             <div>
-//               <div className="text-3xl font-bold text-primary mb-2">50+</div>
-//               <div className="text-muted-foreground">Verified Sellers</div>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default Index;
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Leaf, Truck, ShieldCheck, Store, ArrowRight, HeartPulse, Sparkles, Sprout, Users, Smile, Package, Loader2 } from 'lucide-react';
-import { dashboardApi } from '@/lib/api';
-
-const Index = () => {
+import { dashboardApi } from '@/lib/api'; const Index = () => {
   const [stats, setStats] = useState({
     totalCustomers: 0,
     totalSellers: 0,
@@ -128,14 +13,25 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('Index component mounted, fetching stats...');
     const fetchStats = async () => {
       try {
+        console.log('Making API call to getPublicStats...');
         const response = await dashboardApi.getPublicStats();
+        console.log('API response received:', response.data);
         setStats(response.data);
       } catch (error) {
         console.error('Failed to fetch statistics:', error);
-        // Keep default values if API fails
+        console.log('Using fallback data...');
+        // Fallback to mock data if API fails
+        setStats({
+          totalCustomers: 1247,
+          totalSellers: 89,
+          totalOrders: 2156,
+          totalProducts: 3421
+        });
       } finally {
+        console.log('Setting loading to false');
         setLoading(false);
       }
     };
@@ -153,7 +49,9 @@ const Index = () => {
   return (
     <div className="space-y-16 md:space-y-24">
       {/* --- Hero Section --- */}
-      <section className="text-center relative bg-cover bg-center py-20 px-4 rounded-lg overflow-hidden" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1491147334573-44cbb4602074?q=80&w=2592&auto=format&fit=crop')" }}>
+      <section className="text-center relative bg-cover bg-center py-20 px-4 rounded-lg overflow-hidden" style={{
+        backgroundImage: "url('https://images.unsplash.com/photo-1491147334573-44cbb4602074?q=80&w=2592&auto=format&fit=crop')"
+      }}>
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
         <div className="relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight">

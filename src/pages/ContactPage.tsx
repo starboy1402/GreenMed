@@ -10,19 +10,19 @@ const ContactPage: React.FC = () => {
             icon: Mail,
             title: "Email Us",
             description: "Get in touch via email",
-            contact: "support@greenmed.com"
+            contact: "u2204053@students.cuet.ac.bd"
         },
         {
             icon: Phone,
             title: "Call Us",
             description: "Speak directly with our team",
-            contact: "(123) 456-7890"
+            contact: "01728575232"
         },
         {
             icon: MapPin,
             title: "Visit Us",
             description: "Come to our office",
-            contact: "Cuet 123, Chittagong"
+            contact: "Cuet, Chittagong"
         },
         {
             icon: MessageCircle,
@@ -34,7 +34,7 @@ const ContactPage: React.FC = () => {
 
     const socialLinks = [
         { icon: Globe, platform: "Website", url: "#" },
-        { icon: Facebook, platform: "Facebook", url: "#" },
+        { icon: Facebook, platform: "Facebook", url: "https://www.facebook.com/ayan.barua.12177" },
         { icon: Twitter, platform: "Twitter", url: "#" },
         { icon: Instagram, platform: "Instagram", url: "#" }
     ];
@@ -52,9 +52,8 @@ const ContactPage: React.FC = () => {
                         </div>
 
                         <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-                            Get In Touch
+                            Get In Touch With Us
                             <span className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-                                With Us
                             </span>
                         </h1>
 

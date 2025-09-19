@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Pill, Info } from 'lucide-react';
+import { Search, Pill, Info, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { medicineApi } from '@/lib/api';
 
@@ -27,6 +28,7 @@ const MedicinesPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -51,8 +53,8 @@ const MedicinesPage = () => {
 
   const filteredMedicines = medicines.filter(medicine => {
     const matchesSearch = medicine.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         medicine.activeIngredient.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         medicine.targetDiseases.toLowerCase().includes(searchTerm.toLowerCase());
+      medicine.activeIngredient.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      medicine.targetDiseases.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || medicine.type === typeFilter;
 
     return matchesSearch && matchesType;
@@ -96,7 +98,7 @@ const MedicinesPage = () => {
       <Alert>
         <Info className="h-4 w-4" />
         <AlertDescription>
-          Always read and follow safety instructions before using any plant medicine. 
+          Always read and follow safety instructions before using any plant medicine.
           Consult with agricultural experts for proper dosage and application methods.
         </AlertDescription>
       </Alert>
@@ -189,12 +191,12 @@ const MedicinesPage = () => {
                   <span className="text-muted-foreground font-medium">Active Ingredient:</span>
                   <span className="text-right">{medicine.activeIngredient}</span>
                 </div>
-                
+
                 <div className="flex items-start justify-between text-sm">
                   <span className="text-muted-foreground font-medium">Dosage:</span>
                   <span className="text-right">{medicine.dosage}</span>
                 </div>
-                
+
                 <div className="flex items-start justify-between text-sm">
                   <span className="text-muted-foreground font-medium">Application:</span>
                   <span className="text-right capitalize">{medicine.applicationMethod}</span>
@@ -219,9 +221,65 @@ const MedicinesPage = () => {
                 </div>
               )}
 
-              <Button className="w-full" variant="outline">
-                View Details
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full" variant="outline" onClick={() => setSelectedMedicine(medicine)}>
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Details
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center space-x-2">
+                      <Pill className="h-5 w-5 text-primary" />
+                      <span>{selectedMedicine?.name}</span>
+                    </DialogTitle>
+                    <DialogDescription>
+                      {selectedMedicine?.manufacturer}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold mb-2">Description</h4>
+                      <p className="text-muted-foreground">{selectedMedicine?.description}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-semibold mb-2">Medicine Details</h4>
+                        <div className="space-y-1 text-sm">
+                          <p><span className="font-medium">Active Ingredient:</span> {selectedMedicine?.activeIngredient}</p>
+                          <p><span className="font-medium">Dosage:</span> {selectedMedicine?.dosage}</p>
+                          <p><span className="font-medium">Application:</span> {selectedMedicine?.applicationMethod}</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-2">Target Diseases</h4>
+                        <p className="text-sm text-muted-foreground">{selectedMedicine?.targetDiseases}</p>
+                      </div>
+                    </div>
+
+                    {selectedMedicine?.safetyInstructions && (
+                      <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertDescription>
+                          <strong>Safety Instructions:</strong> {selectedMedicine.safetyInstructions}
+                        </AlertDescription>
+                      </Alert>
+                    )}
+
+                    <div className="flex items-center justify-between">
+                      <Badge className={getTypeColor(selectedMedicine?.type || '')}>
+                        {selectedMedicine?.type}
+                      </Badge>
+                      <Button variant="outline" size="sm">
+                        Add to Cart
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         ))}

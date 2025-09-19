@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Leaf } from 'lucide-react';
+import { Search, Filter, Leaf, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { plantApi } from '@/lib/api';
 
@@ -29,6 +30,7 @@ const PlantsPage = () => {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [seasonFilter, setSeasonFilter] = useState('all');
   const [rateFilter, setRateFilter] = useState('all');
+  const [selectedPlant, setSelectedPlant] = useState<Plant | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -53,7 +55,7 @@ const PlantsPage = () => {
 
   const filteredPlants = plants.filter(plant => {
     const matchesSearch = plant.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         plant.scientificName.toLowerCase().includes(searchTerm.toLowerCase());
+      plant.scientificName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || plant.category === categoryFilter;
     const matchesSeason = seasonFilter === 'all' || plant.growthSeason === seasonFilter;
     const matchesRate = rateFilter === 'all' || plant.growthRate === rateFilter;
@@ -231,9 +233,58 @@ const PlantsPage = () => {
                 </div>
               </div>
 
-              <Button className="w-full" variant="outline">
-                View Details
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full" variant="outline" onClick={() => setSelectedPlant(plant)}>
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Details
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center space-x-2">
+                      <Leaf className="h-5 w-5 text-primary" />
+                      <span>{selectedPlant?.name}</span>
+                    </DialogTitle>
+                    <DialogDescription className="italic">
+                      {selectedPlant?.scientificName}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold mb-2">Description</h4>
+                      <p className="text-muted-foreground">{selectedPlant?.description}</p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-semibold mb-2">Growth Information</h4>
+                        <div className="space-y-1 text-sm">
+                          <p><span className="font-medium">Season:</span> {selectedPlant?.growthSeason}</p>
+                          <p><span className="font-medium">Rate:</span> {selectedPlant?.growthRate}</p>
+                          <p><span className="font-medium">Water Needs:</span> {selectedPlant?.waterRequirements}</p>
+                          <p><span className="font-medium">Light Needs:</span> {selectedPlant?.lightRequirements}</p>
+                          <p><span className="font-medium">Soil Type:</span> {selectedPlant?.soilType}</p>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-2">Care Instructions</h4>
+                        <p className="text-sm text-muted-foreground">{selectedPlant?.careInstructions}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <Badge className={getCategoryColor(selectedPlant?.category || '')}>
+                        {selectedPlant?.category}
+                      </Badge>
+                      <Button variant="outline" size="sm">
+                        Add to Wishlist
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         ))}

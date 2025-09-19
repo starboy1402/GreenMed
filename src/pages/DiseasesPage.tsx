@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Bug } from 'lucide-react';
+import { Search, Filter, Bug, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { diseaseApi } from '@/lib/api';
 
@@ -25,6 +26,7 @@ const DiseasesPage = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [severityFilter, setSeverityFilter] = useState('all');
+  const [selectedDisease, setSelectedDisease] = useState<Disease | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -49,10 +51,10 @@ const DiseasesPage = () => {
 
   const filteredDiseases = diseases.filter(disease => {
     const matchesSearch = disease.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         disease.symptoms.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         disease.affectedPlants.toLowerCase().includes(searchTerm.toLowerCase());
+      disease.symptoms.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      disease.affectedPlants.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSeverity = severityFilter === 'all' || disease.severity.toLowerCase() === severityFilter;
-    
+
     return matchesSearch && matchesSeverity;
   });
 
@@ -134,14 +136,14 @@ const DiseasesPage = () => {
         {filteredDiseases.map((disease) => (
           <Card key={disease.id} className="hover:shadow-medium transition-smooth group">
             <CardHeader>
-                <div className="flex items-start justify-between">
-                    <CardTitle className="group-hover:text-primary transition-smooth text-lg">
-                        {disease.name}
-                    </CardTitle>
-                    <Badge className={getSeverityColor(disease.severity)}>
-                        {disease.severity}
-                    </Badge>
-                </div>
+              <div className="flex items-start justify-between">
+                <CardTitle className="group-hover:text-primary transition-smooth text-lg">
+                  {disease.name}
+                </CardTitle>
+                <Badge className={getSeverityColor(disease.severity)}>
+                  {disease.severity}
+                </Badge>
+              </div>
               <CardDescription className="italic">
                 Affects: {disease.affectedPlants}
               </CardDescription>
@@ -151,9 +153,69 @@ const DiseasesPage = () => {
                 <span className="font-medium text-foreground">Symptoms: </span>{disease.symptoms}
               </p>
 
-              <Button className="w-full" variant="outline">
-                View Details
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="w-full" variant="outline" onClick={() => setSelectedDisease(disease)}>
+                    <Eye className="h-4 w-4 mr-2" />
+                    View Details
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center space-x-2">
+                      <Bug className="h-5 w-5 text-primary" />
+                      <span>{selectedDisease?.name}</span>
+                    </DialogTitle>
+                    <DialogDescription>
+                      Severity: <Badge className={getSeverityColor(selectedDisease?.severity || '')}>
+                        {selectedDisease?.severity}
+                      </Badge>
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="font-semibold mb-2">Description</h4>
+                      <p className="text-muted-foreground">{selectedDisease?.description}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Symptoms</h4>
+                      <p className="text-muted-foreground">{selectedDisease?.symptoms}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Cause</h4>
+                      <p className="text-muted-foreground">{selectedDisease?.cause}</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <h4 className="font-semibold mb-2">Prevention</h4>
+                        <p className="text-sm text-muted-foreground">{selectedDisease?.prevention}</p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-semibold mb-2">Treatment</h4>
+                        <p className="text-sm text-muted-foreground">{selectedDisease?.treatment}</p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-semibold mb-2">Affected Plants</h4>
+                      <p className="text-muted-foreground italic">{selectedDisease?.affectedPlants}</p>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <Badge variant="outline">
+                        Severity: {selectedDisease?.severity}
+                      </Badge>
+                      <Button variant="outline" size="sm">
+                        Find Treatment
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </CardContent>
           </Card>
         ))}
