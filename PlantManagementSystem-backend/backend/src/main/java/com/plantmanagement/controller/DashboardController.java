@@ -2,6 +2,7 @@ package com.plantmanagement.controller;
 
 import com.plantmanagement.dto.AdminDashboardStatsDTO;
 import com.plantmanagement.dto.SellerDashboardStatsDTO;
+import com.plantmanagement.dto.PublicStatsDTO;
 import com.plantmanagement.service.DashboardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +33,9 @@ public class DashboardController {
     public ResponseEntity<SellerDashboardStatsDTO> getSellerStats(Principal principal) {
         return ResponseEntity.ok(dashboardService.getSellerDashboardStats(principal.getName()));
     }
-}
 
+    @GetMapping("/public-stats")
+    public ResponseEntity<PublicStatsDTO> getPublicStats() {
+        return ResponseEntity.ok(dashboardService.getPublicStats());
+    }
+}

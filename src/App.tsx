@@ -27,6 +27,9 @@ import AdminProfile from './pages/AdminProfile';
 import SellerProfile from './pages/SellerProfile';
 import SellerReviewPage from './pages/SellerReviewPage';
 import ManageSellersPage from './pages/ManageSellersPage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+import FAQPage from './pages/FAQPage';
 
 const queryClient = new QueryClient();
 
@@ -55,6 +58,9 @@ const App = () => (
                     <Route path="/sellers" element={<SellersDisplayPage />} />
                     <Route path="/sellers/:sellerId" element={<SellerShopPage />} />
                     <Route path="/sellers/:sellerId/reviews" element={<SellerReviewPage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/faq" element={<FAQPage />} />
 
 
                     {/* Protected routes */}

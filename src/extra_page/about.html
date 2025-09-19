@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="GreenMed - Learn about our mission and values." />
+  <meta name="keywords" content="GreenMed, about, plants, sustainability" />
+  <meta name="author" content="GreenMed Team" />
+  <title>🌿 GreenMed - About</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #e6f0ea 0%, #f0f4f1 100%);
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+    .landing-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+    }
+    .slideshow {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .slideshow img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: opacity 1.2s ease-in-out;
+    }
+    .slideshow img.active {
+      opacity: 0.9;
+      animation: moveImage 10s ease-in-out infinite;
+    }
+    .content-panel {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 25px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1s ease-out;
+    }
+    .content-panel h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #2ab55c;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 5px rgba(42, 181, 92, 0.2);
+    }
+    .content-panel h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #333;
+      margin: 2rem 0 1rem;
+      text-align: center;
+    }
+    .content-panel p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: #444;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+    .divider {
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #28a745, #20c997);
+      margin: 2rem auto;
+      border-radius: 2px;
+    }
+    .values-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .value-item {
+      text-align: center;
+      padding: 1rem;
+    }
+    .value-item span {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #28a745;
+    }
+    .value-item h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 0.5rem;
+    }
+    .value-item p {
+      font-size: 0.95rem;
+      color: #555;
+    }
+    .contact-form {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+    .contact-form:hover {
+      transform: translateY(-5px);
+    }
+    .contact-form input, .contact-form textarea {
+      width: 100%;
+      padding: 16px;
+      margin: 12px 0;
+      border: 2px solid transparent;
+      border-radius: 25px;
+      background: #ffffff;
+      font-size: 1rem;
+      color: #333;
+      outline: none;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      position: relative;
+      font-family: inherit;
+    }
+    .contact-form input:focus, .contact-form textarea:focus {
+      border-color: #28a745;
+      background: #f8fffb;
+      box-shadow: 0 5px 15px rgba(42, 181, 92, 0.2);
+      transform: scale(1.02);
+    }
+    .contact-form textarea {
+      border-radius: 20px;
+      resize: vertical;
+      min-height: 140px;
+      padding-top: 12px;
+    }
+    .contact-form input::placeholder, .contact-form textarea::placeholder {
+      color: #888;
+      font-style: italic;
+    }
+    .contact-form button {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      text-align: center;
+      padding: 16px;
+      margin: 20px auto;
+      background: linear-gradient(45deg, #28a745, #20c997);
+      border: none;
+      color: #ffffff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 30px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .contact-form button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transition: left 0.4s ease;
+    }
+    .contact-form button:hover::before {
+      left: 100%;
+    }
+    .contact-form button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+      background: linear-gradient(45deg, #20c997, #28a745);
+    }
+    .success-message {
+      text-align: center;
+      color: #28a745;
+      font-weight: 600;
+      margin-top: 1rem;
+      display: none;
+    }
+    @keyframes moveImage {
+      0% { transform: scale(1.05) translate(0, 0); }
+      50% { transform: scale(1.15) translate(-2%, -2%); }
+      100% { transform: scale(1.05) translate(0, 0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @media (max-width: 768px) {
+      .content-panel {
+        margin: 20px auto;
+        padding: 25px;
+        width: 95%;
+      }
+      .content-panel h1 {
+        font-size: 2.2rem;
+      }
+      .content-panel h2 {
+        font-size: 1.6rem;
+      }
+      .content-panel p {
+        font-size: 1rem;
+      }
+      .values-list {
+        grid-template-columns: 1fr;
+      }
+      .contact-form {
+        padding: 15px;
+      }
+      .contact-form input, .contact-form textarea {
+        padding: 12px;
+      }
+      .contact-form button {
+        max-width: 280px;
+        font-size: 0.95rem;
+        padding: 12px;
+      }
+    }
+    @media (max-width: 480px) {
+      .content-panel h1 {
+        font-size: 1.8rem;
+      }
+      .content-panel h2 {
+        font-size: 1.4rem;
+      }
+      .content-panel p {
+        font-size: 0.9rem;
+      }
+      .value-item h3 {
+        font-size: 1.1rem;
+      }
+      .value-item p {
+        font-size: 0.85rem;
+      }
+      .contact-form input, .contact-form textarea {
+        font-size: 0.9rem;
+      }
+      .contact-form button {
+        max-width: 260px;
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="landing-container">
+    <div class="slideshow">
+      <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Nature Background 1" class="active" />
+      <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Nature Background 2" />
+      <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Nature Background 3" />
+      <img src="https://images.unsplash.com/photo-1420593248178-d88870618ca0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Nature Background 4" />
+    </div>
+  </div>
+  <div class="content-panel">
+    <h1>🌿 About GreenMed</h1>
+    <p>GreenMed is your go-to digital hub for plant lovers, gardeners, farmers, and sellers. Whether you’re nurturing your first seedling or managing a thriving nursery, our platform makes plant care effortless, educational, and inspiring.</p>
+    <p>Browse our curated e-commerce marketplace for premium plants and gardening tools, connect with plant experts for tailored advice, and diagnose issues with cutting-edge tools. GreenMed brings together a passionate community to share knowledge and promote sustainable practices, helping you grow greener, healthier plants.</p>
+    <div class="divider"></div>
+    <h2>Our Core Values</h2>
+    <div class="values-list">
+      <div class="value-item">
+        <span>🌱</span>
+        <h3>Sustainability</h3>
+        <p>Championing eco-friendly practices to nurture the planet.</p>
+      </div>
+      <div class="value-item">
+        <span>🤝</span>
+        <h3>Community</h3>
+        <p>Building connections among plant enthusiasts and experts.</p>
+      </div>
+      <div class="value-item">
+        <span>💡</span>
+        <h3>Innovation</h3>
+        <p>Delivering smart tools for modern plant care.</p>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <h2>Our Vision</h2>
+    <p>We dream of a world where every plant thrives and every grower feels empowered. GreenMed is committed to making plant care accessible, joyful, and sustainable for all, fostering a greener future one leaf at a time.</p>
+    <div class="divider"></div>
+    <h2>Our Community</h2>
+    <p>Join a vibrant network of plant enthusiasts, botanists, and growers. Share your passion, learn from experts, and inspire others to cultivate their green spaces with GreenMed.</p>
+    <div class="divider"></div>
+    <h2>Contact Us</h2>
+    <p>Have questions or ideas? Reach out to our team—we’re excited to connect!</p>
+    <form class="contact-form" id="contact-form">
+      <input type="text" id="contact-name" placeholder="Your Name" required />
+      <input type="email" id="contact-email" placeholder="Your Email" required />
+      <textarea id="contact-message" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+      <p class="success-message" id="success-message">Message sent successfully!</p>
+    </form>
+  </div>
+  <script>
+    const images = document.querySelectorAll('.slideshow img');
+    let currentIndex = 0;
+
+    function changeImage() {
+      images[currentIndex].classList.remove('active');
+      currentIndex = (currentIndex + 1) % images.length;
+      images[currentIndex].classList.add('active');
+    }
+
+    setInterval(changeImage, 4000);
+
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const name = document.getElementById('contact-name').value;
+      const email = document.getElementById('contact-email').value;
+      const message = document.getElementById('contact-message').value;
+      const timestamp = new Date().toLocaleString();
+      
+      const messages = JSON.parse(localStorage.getItem('messages')) || [];
+      messages.push({ name, email, message, timestamp });
+      localStorage.setItem('messages', JSON.stringify(messages));
+      
+      const successMessage = document.getElementById('success-message');
+      successMessage.style.display = 'block';
+      setTimeout(() => {
+        successMessage.style.display = 'none';
+      }, 3000);
+      
+      this.reset();
+    });
+  </script>
+</body>
+</html>

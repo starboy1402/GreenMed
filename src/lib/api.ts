@@ -97,6 +97,7 @@ export const paymentApi = {
 export const dashboardApi = {
   getAdminStats: () => api.get('/dashboard/admin-stats'),
   getSellerStats: () => api.get('/dashboard/seller-stats'), // Add this new function
+  getPublicStats: () => api.get('/dashboard/public-stats'),
 };
 
 // Add the new reviewApi

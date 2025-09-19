@@ -2,6 +2,7 @@ package com.plantmanagement.service;
 
 import com.plantmanagement.dto.AdminDashboardStatsDTO;
 import com.plantmanagement.dto.SellerDashboardStatsDTO;
+import com.plantmanagement.dto.PublicStatsDTO;
 import com.plantmanagement.entity.Order;
 import com.plantmanagement.entity.User;
 import com.plantmanagement.repository.InventoryRepository;
@@ -43,8 +44,16 @@ public class DashboardService {
         long lowStockItems = inventoryRepository.countLowStockItemsForSeller(seller.getId());
         long totalProducts = inventoryRepository.countBySellerId(seller.getId());
         List<Order> recentOrders = orderRepository.findTop5BySellerIdOrderByOrderDateDesc(seller.getId());
-        
+
         return new SellerDashboardStatsDTO(totalRevenue, activeOrders, lowStockItems, totalProducts, recentOrders);
     }
-}
 
+    public PublicStatsDTO getPublicStats() {
+        long totalCustomers = userRepository.countTotalCustomers();
+        long totalSellers = userRepository.countTotalSellers();
+        long totalOrders = orderRepository.countPaidOrders();
+        long totalProducts = inventoryRepository.count();
+
+        return new PublicStatsDTO(totalCustomers, totalSellers, totalOrders, totalProducts);
+    }
+}

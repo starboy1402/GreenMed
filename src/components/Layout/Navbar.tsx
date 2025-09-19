@@ -53,6 +53,9 @@ const Navbar = () => {
       { label: 'Plants', path: '/plants' },
       { label: 'Medicines', path: '/medicines' },
       { label: 'Diseases', path: '/diseases' },
+      { label: 'About', path: '/about' },
+      { label: 'Contact', path: '/contact' },
+      { label: 'FAQ', path: '/faq' },
     ];
 
     if (!user) return publicItems;

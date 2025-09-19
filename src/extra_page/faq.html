@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Frequently Asked Questions about GreenMed, your premier destination for plants and botanical shops.">
+  <meta name="keywords" content="GreenMed, plants, botanical, gardening, FAQ">
+  <meta name="author" content="GreenMed Team">
+  <!-- Open Graph Tags for SEO -->
+  <meta property="og:title" content="GreenMed - FAQ">
+  <meta property="og:description" content="Find answers to common questions about GreenMed, plants, and our services.">
+  <meta property="og:image" content="/images/greenmed-logo.jpg">
+  <meta property="og:url" content="https://yourdomain.com/faq">
+  <meta property="og:type" content="website">
+  <title>🌿 GreenMed - FAQ</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e6f0ea 0%, #f0f4f1 100%);
+      min-height: 100vh;
+      overflow-y: auto;
+    }
+
+    .landing-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    .slideshow {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .slideshow img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: opacity 1.2s ease-in-out;
+    }
+
+    .slideshow img.active {
+      opacity: 0.9;
+      animation: moveImage 10s ease-in-out infinite;
+    }
+
+    .content-panel {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      margin: 100px auto 40px;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.97);
+      border-radius: 25px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1s ease-out;
+    }
+
+    .content-panel h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #2ab55c;
+      text-align: center;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 5px rgba(42, 181, 92, 0.2);
+    }
+
+    .content-panel p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: #444;
+      text-align: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .divider {
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #28a745, #20c997);
+      margin: 2rem auto;
+      border-radius: 2px;
+    }
+
+    .faq-item {
+      margin-bottom: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item:hover {
+      transform: translateY(-5px);
+    }
+
+    .faq-question {
+      cursor: pointer;
+      padding: 16px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #333;
+      background: #ffffff;
+      border-radius: 15px;
+      transition: background 0.3s ease;
+    }
+
+    .faq-question:hover {
+      background: #f8fffb;
+      box-shadow: 0 5px 15px rgba(42, 181, 92, 0.2);
+    }
+
+    .faq-answer {
+      padding: 16px;
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.7;
+      display: none;
+    }
+
+    .header {
+      background: #ffffff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .header .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #2ab55c;
+    }
+
+    .header nav {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .header nav a {
+      font-size: 1rem;
+      color: #444;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .header nav a:hover {
+      color: #28a745;
+    }
+
+    .footer {
+      background: #2ab55c;
+      color: #ffffff;
+      padding: 3rem 1rem;
+      margin-top: 2rem;
+    }
+
+    .footer .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+
+    .footer h4 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .footer p, .footer a {
+      font-size: 0.95rem;
+      color: #e6f0ea;
+      margin-bottom: 0.5rem;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: #ffffff;
+    }
+
+    .footer .social-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .footer .social-links svg {
+      width: 24px;
+      height: 24px;
+      fill: #e6f0ea;
+      transition: fill 0.3s ease;
+    }
+
+    .footer .social-links svg:hover {
+      fill: #ffffff;
+    }
+
+    @keyframes moveImage {
+      0% { transform: scale(1.05) translate(0, 0); }
+      50% { transform: scale(1.15) translate(-2%, -2%); }
+      100% { transform: scale(1.05) translate(0, 0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 768px) {
+      .content-panel {
+        margin: 80px auto 20px;
+        padding: 25px;
+        width: 95%;
+      }
+
+      .content-panel h1 {
+        font-size: 2.2rem;
+      }
+
+      .content-panel p {
+        font-size: 1rem;
+      }
+
+      .faq-question {
+        font-size: 1.1rem;
+        padding: 12px;
+      }
+
+      .faq-answer {
+        font-size: 0.95rem;
+        padding: 12px;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+
+      .header nav {
+        gap: 1rem;
+      }
+
+      .header nav a {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .content-panel h1 {
+        font-size: 1.8rem;
+      }
+
+      .content-panel p {
+        font-size: 0.9rem;
+      }
+
+      .faq-question {
+        font-size: 1rem;
+      }
+
+      .faq-answer {
+        font-size: 0.85rem;
+      }
+
+      .header nav a {
+        font-size: 0.85rem;
+      }
+
+      .footer .container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <h1>🌿 GreenMed</h1>
+      <nav>
+        <a href="about.html">About Us</a>
+        <a href="faq.html">FAQ</a>
+        <a href="contact.html">Contact</a>
+        <a onclick="redirectToProfile()" style="cursor: pointer;">My Profile</a>
+        <a href="1loginabout.html" onclick="signOut()">Sign Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="landing-container">
+    <div class="slideshow">
+      <img src="https://images.unsplash.com/photo-1502082553048-f009c37129b9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Nature Background 1" class="active" />
+      <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Nature Background 2" />
+      <img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Nature Background 3" />
+      <img src="https://images.unsplash.com/photo-1420593248178-d88870618ca0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" alt="Nature Background 4" />
+    </div>
+  </div>
+  <div class="content-panel">
+    <h1>🌿 Frequently Asked Questions</h1>
+    <p>Find answers to common questions about GreenMed, our platform, and how we support plant enthusiasts and botanical shops.</p>
+    <div class="divider"></div>
+    <div class="faq-item">
+      <div class="faq-question">What is GreenMed?</div>
+      <div class="faq-answer">
+        GreenMed is a platform dedicated to connecting plant enthusiasts with premium plants and trusted botanical shops. We offer detailed plant information, care tips, and medicines to ensure your plants thrive.
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">How do I order medicines for my plants?</div>
+      <div class="faq-answer">
+        On our plants page, each plant lists common diseases and recommended medicines. You can select a quantity and click "Add to Cart" to order medicines. Your cart is saved and can be accessed from the profile section.
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">What types of plants do you offer?</div>
+      <div class="faq-answer">
+        We offer a variety of plants, including tropical and ornamental categories. You can filter plants by category on the Explore Shop page to find the perfect addition to your collection.
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">How can I contact customer support?</div>
+      <div class="faq-answer">
+        You can reach our support team via email at support@greenmed.com, by phone at (123) 456-7890, or visit us at Cuet 123, Chittagong. Check our Contact page for more details.
+      </div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-question">Do you ship internationally?</div>
+      <div class="faq-answer">
+        Currently, we ship to select regions. Please contact our support team to confirm if we can deliver to your location.
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- JavaScript -->
+  <script>
+    const images = document.querySelectorAll('.slideshow img');
+    let currentIndex = 0;
+
+    function changeImage() {
+      images[currentIndex].classList.remove('active');
+      currentIndex = (currentIndex + 1) % images.length;
+      images[currentIndex].classList.add('active');
+    }
+
+    function redirectToProfile() {
+      const userRole = localStorage.getItem('userRole');
+      if (userRole === 'seller') {
+        window.location.href = '3sellerdash.html';
+      } else if (userRole === 'customer') {
+        window.location.href = '7customerdash.html';
+      } else {
+        alert('Please log in to access your profile.');
+        window.location.href = '1loginabout.html';
+      }
+    }
+
+    function signOut() {
+      localStorage.removeItem('cart');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('user');
+      window.location.href = '1loginabout.html';
+    }
+
+    // Check if user is admin and redirect
+    const user = JSON.parse(localStorage.getItem('user'));
+    const adminUsers = ['u2204064', 'u2204053', 'u2204045', 'u2204061'];
+    if (user && adminUsers.includes(user.username)) {
+      window.location.href = '5admindash.html';
+    }
+
+    // FAQ Toggle
+    const faqItems = document.querySelectorAll('.faq-item');
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      const answer = item.querySelector('.faq-answer');
+      question.addEventListener('click', () => {
+        answer.style.display = answer.style.display === 'block' ? 'none' : 'block';
+      });
+    });
+
+    setInterval(changeImage, 4000);
+  </script>
+</body>
+</html>
