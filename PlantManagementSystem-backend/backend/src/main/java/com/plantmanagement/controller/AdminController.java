@@ -1,6 +1,8 @@
 package com.plantmanagement.controller;
 
+import com.plantmanagement.dto.AdminOrderResponse;
 import com.plantmanagement.dto.UserResponse;
+import com.plantmanagement.entity.Order;
 import com.plantmanagement.entity.User;
 import com.plantmanagement.service.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = { "http://localhost:8081", "http://localhost:8080" })
 public class AdminController {
 
     private final AdminService adminService;
@@ -24,8 +26,8 @@ public class AdminController {
     public ResponseEntity<List<UserResponse>> getPendingSellers() {
         List<User> pendingSellers = adminService.getPendingSellers();
         List<UserResponse> response = pendingSellers.stream()
-                                                    .map(UserResponse::new)
-                                                    .collect(Collectors.toList());
+                .map(UserResponse::new)
+                .collect(Collectors.toList());
         return ResponseEntity.ok(response);
     }
 
@@ -41,5 +43,15 @@ public class AdminController {
     public ResponseEntity<?> rejectSeller(@PathVariable Long sellerId) {
         adminService.rejectSeller(sellerId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/orders")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<AdminOrderResponse>> getAllOrders() {
+        List<Order> orders = adminService.getAllOrders();
+        List<AdminOrderResponse> response = orders.stream()
+                .map(AdminOrderResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 }

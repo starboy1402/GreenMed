@@ -1,6 +1,8 @@
 package com.plantmanagement.service;
 
+import com.plantmanagement.entity.Order;
 import com.plantmanagement.entity.User;
+import com.plantmanagement.repository.OrderRepository;
 import com.plantmanagement.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,12 @@ import java.util.stream.Collectors;
 public class AdminService {
 
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
     public List<User> getPendingSellers() {
         return userRepository.findAll().stream()
-                .filter(user -> user.getUserType() == User.UserRole.SELLER && user.getApplicationStatus() == User.ApplicationStatus.PENDING)
+                .filter(user -> user.getUserType() == User.UserRole.SELLER
+                        && user.getApplicationStatus() == User.ApplicationStatus.PENDING)
                 .collect(Collectors.toList());
     }
 
@@ -41,5 +45,9 @@ public class AdminService {
         } else {
             throw new RuntimeException("User is not a seller");
         }
+    }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
     }
 }

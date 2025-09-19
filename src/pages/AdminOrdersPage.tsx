@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { orderApi } from '@/lib/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface Order {
   id: number;
@@ -19,16 +20,20 @@ const AdminOrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { user, userType } = useAuth(); // Add this to check user info
 
   const fetchAllOrders = async () => {
     try {
       setLoading(true);
+      console.log('Fetching orders for user:', user, 'with role:', userType); // Debug log
       const response = await orderApi.getAllOrders();
+      console.log('Orders response:', response.data); // Debug log
       setOrders(response.data);
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error fetching orders:', error); // Debug log
       toast({
         title: "Error",
-        description: "Failed to load orders.",
+        description: error.response?.data?.message || "Failed to load orders.",
         variant: "destructive"
       });
     } finally {
@@ -57,6 +62,17 @@ const AdminOrdersPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Debug Info */}
+      <Card className="bg-yellow-50 border-yellow-200">
+        <CardContent className="pt-4">
+          <p className="text-sm text-yellow-800">
+            <strong>Debug Info:</strong> User: {user?.name || 'Not logged in'} |
+            Role: {userType || 'None'} |
+            Email: {user?.email || 'N/A'}
+          </p>
+        </CardContent>
+      </Card>
+
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">All Customer Orders</h1>
         <Badge variant="outline" className="text-lg px-3 py-1">

@@ -14,8 +14,13 @@ export const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('authToken');
+    console.log('API Request:', config.method?.toUpperCase(), config.url);
+    console.log('Auth Token present:', !!token);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+      console.log('Authorization header set');
+    } else {
+      console.log('No auth token found');
     }
     return config;
   },
@@ -71,19 +76,19 @@ export const inventoryApi = {
 };
 
 export const orderApi = {
-  create: (orderData: { sellerId: string; items: { inventoryItemId: string; quantity: number }[] }) => 
+  create: (orderData: { sellerId: string; items: { inventoryItemId: string; quantity: number }[] }) =>
     api.post('/orders', orderData),
   getByCustomer: () => api.get('/orders/customer'),
   getBySeller: () => api.get('/orders/seller'),
   getDetails: (orderId: string) => api.get(`/orderdetails/${orderId}`),
-   getAllOrders: () => api.get('/admin/orders'), 
+  getAllOrders: () => api.get('/admin/orders'),
   updateStatus: (orderId: number, status: string) => api.put(`/orders/${orderId}/status?status=${status}`),
 };
 
 // Add the new paymentApi object
 export const paymentApi = {
-    processPayment: (orderId: number, paymentData: { paymentMethod: string; transactionId: string }) => 
-        api.post(`/payment/order/${orderId}`, paymentData),
+  processPayment: (orderId: number, paymentData: { paymentMethod: string; transactionId: string }) =>
+    api.post(`/payment/order/${orderId}`, paymentData),
 };
 
 // Add the new dashboardApi
