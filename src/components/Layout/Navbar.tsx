@@ -53,13 +53,16 @@ const Navbar = () => {
       { label: 'Plants', path: '/plants' },
       { label: 'Medicines', path: '/medicines' },
       { label: 'Diseases', path: '/diseases' },
-      { label: 'Sellers', path: '/sellers' },
     ];
 
     if (!user) return publicItems;
 
     if (userType === 'customer') {
-      return [...publicItems, { label: 'My Orders', path: '/orders' }];
+      return [
+        ...publicItems,
+        { label: 'Sellers', path: '/sellers' },
+        { label: 'My Orders', path: '/orders' }
+      ];
     }
 
     if (userType === 'seller') {
@@ -79,7 +82,6 @@ const Navbar = () => {
         { label: 'Plants', path: '/plants' },
         { label: 'Medicines', path: '/medicines' },
         { label: 'Diseases', path: '/diseases' },
-        { label: 'Sellers', path: '/sellers' },
         { label: 'All Orders', path: '/admin/orders' },
       ];
     }
