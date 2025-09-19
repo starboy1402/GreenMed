@@ -42,6 +42,9 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/plants/**").permitAll()
+                        .requestMatchers("/api/diseases/**").permitAll()
+                        .requestMatchers("/api/medicines/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN") // This rule is now active
                         .requestMatchers("/api/seller/**").hasAnyRole("SELLER", "ADMIN")
                         .requestMatchers("/api/customer/**").hasAnyRole("CUSTOMER", "ADMIN")
