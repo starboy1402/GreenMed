@@ -61,6 +61,8 @@ export const sellerApi = {
   getPending: () => api.get('/admin/sellers/pending'),
   approve: (sellerId: string) => api.put(`/admin/sellers/${sellerId}/approve`),
   reject: (sellerId: string) => api.put(`/admin/sellers/${sellerId}/reject`),
+  getAll: () => api.get('/admin/sellers'),
+  updateActiveStatus: (sellerId: string, isActive: boolean) => api.put(`/admin/sellers/${sellerId}/status?isActive=${isActive}`),
 };
 
 export const adminApi = {

@@ -47,6 +47,23 @@ public class AdminService {
         }
     }
 
+    public List<User> getAllSellers() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getUserType() == User.UserRole.SELLER)
+                .collect(Collectors.toList());
+    }
+
+    public void updateSellerActiveStatus(Long sellerId, Boolean isActive) {
+        User seller = userRepository.findById(sellerId)
+                .orElseThrow(() -> new RuntimeException("Seller not found"));
+        if (seller.getUserType() == User.UserRole.SELLER) {
+            seller.setIsActive(isActive);
+            userRepository.save(seller);
+        } else {
+            throw new RuntimeException("User is not a seller");
+        }
+    }
+
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }

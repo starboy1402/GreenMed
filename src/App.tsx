@@ -26,6 +26,7 @@ import CustomerProfile from './pages/CustomerProfile';
 import AdminProfile from './pages/AdminProfile';
 import SellerProfile from './pages/SellerProfile';
 import SellerReviewPage from './pages/SellerReviewPage';
+import ManageSellersPage from './pages/ManageSellersPage';
 
 const queryClient = new QueryClient();
 
@@ -99,7 +100,7 @@ const App = () => (
 
                     <Route path="/admin/sellers" element={
                       <ProtectedRoute requiredRole="admin">
-                        <SellersPage />
+                        <ManageSellersPage />
                       </ProtectedRoute>
                     } />
 

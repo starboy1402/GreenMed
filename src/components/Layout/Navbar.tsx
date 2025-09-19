@@ -82,6 +82,7 @@ const Navbar = () => {
         { label: 'Plants', path: '/plants' },
         { label: 'Medicines', path: '/medicines' },
         { label: 'Diseases', path: '/diseases' },
+        { label: 'Manage Sellers', path: '/admin/sellers' },
         { label: 'All Orders', path: '/admin/orders' },
       ];
     }

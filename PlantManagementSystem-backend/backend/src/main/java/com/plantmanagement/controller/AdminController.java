@@ -45,6 +45,23 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/sellers")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UserResponse>> getAllSellers() {
+        List<User> sellers = adminService.getAllSellers();
+        List<UserResponse> response = sellers.stream()
+                .map(UserResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/sellers/{sellerId}/status")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> updateSellerActiveStatus(@PathVariable Long sellerId, @RequestParam Boolean isActive) {
+        adminService.updateSellerActiveStatus(sellerId, isActive);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/orders")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<AdminOrderResponse>> getAllOrders() {
