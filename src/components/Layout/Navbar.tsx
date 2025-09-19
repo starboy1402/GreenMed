@@ -48,7 +48,7 @@ const Navbar = () => {
     }
   };
 
-    const getNavItems = () => {
+  const getNavItems = () => {
     const publicItems = [
       { label: 'Plants', path: '/plants' },
       { label: 'Medicines', path: '/medicines' },
@@ -69,8 +69,8 @@ const Navbar = () => {
         { label: 'Orders', path: '/orders' },
       ];
     }
-    
-     if (userType === 'admin') {
+
+    if (userType === 'admin') {
       return [
         { label: 'Dashboard', path: '/admin' },
         // { label: 'Manage Sellers', path: '/sellers' },
@@ -131,6 +131,12 @@ const Navbar = () => {
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={`${getDashboardLink()}/profile`}>
+                        <User className="mr-2 h-4 w-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleLogout}>
                       <LogOut className="mr-2 h-4 w-4" />
@@ -150,7 +156,7 @@ const Navbar = () => {
           </div>
 
           <div className="md:hidden flex items-center gap-2">
-             {/* --- AND ALSO HERE FOR MOBILE --- */}
+            {/* --- AND ALSO HERE FOR MOBILE --- */}
             {userType === 'customer' && <CartSheet />}
             <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)}>
               {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}

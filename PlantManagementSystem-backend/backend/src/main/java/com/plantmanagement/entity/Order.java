@@ -25,6 +25,10 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "shipping_address_id")
+    private ShippingAddress shippingAddress;
+
     @Column(nullable = false)
     private Double totalAmount;
 

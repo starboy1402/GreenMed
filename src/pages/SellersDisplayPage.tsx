@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Store, User, Phone, MapPin } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Store, User, Phone, MapPin, Star } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/api'; // We will add a new endpoint here
 
@@ -73,6 +74,14 @@ const SellersDisplayPage = () => {
                   <span>{seller.address}</span>
                 </div>
               </CardContent>
+              <CardFooter>
+                <Button asChild variant="outline" className="w-full">
+                  <Link to={`/sellers/${seller.id}/reviews`}>
+                    <Star className="h-4 w-4 mr-2" />
+                    View Reviews
+                  </Link>
+                </Button>
+              </CardFooter>
             </Card>
           </Link>
         ))}

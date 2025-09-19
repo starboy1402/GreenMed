@@ -10,6 +10,7 @@ com\plantmanagement\dto\SignupRequest.class
 com\plantmanagement\controller\AuthController$ErrorResponse.class
 com\plantmanagement\util\JwtUtil.class
 com\plantmanagement\entity\User.class
+com\plantmanagement\repository\ReviewRepository.class
 com\plantmanagement\PlantManagementApplication.class
 com\plantmanagement\dto\LoginResponse.class
 com\plantmanagement\dto\LoginRequest.class

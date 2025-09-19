@@ -22,6 +22,10 @@ import DiseasesPage from "./pages/DiseasesPage";
 import SellersDisplayPage from "./pages/SellersDisplayPage";
 import SellerShopPage from "./pages/SellerShopPage";
 import AdminOrdersPage from '@/pages/AdminOrdersPage';
+import CustomerProfile from './pages/CustomerProfile';
+import AdminProfile from './pages/AdminProfile';
+import SellerProfile from './pages/SellerProfile';
+import SellerReviewPage from './pages/SellerReviewPage';
 
 const queryClient = new QueryClient();
 
@@ -49,6 +53,7 @@ const App = () => (
                     <Route path="/diseases" element={<DiseasesPage />} />
                     <Route path="/sellers" element={<SellersDisplayPage />} />
                     <Route path="/sellers/:sellerId" element={<SellerShopPage />} />
+                    <Route path="/sellers/:sellerId/reviews" element={<SellerReviewPage />} />
 
 
                     {/* Protected routes */}
@@ -58,9 +63,21 @@ const App = () => (
                       </ProtectedRoute>
                     } />
 
+                    <Route path="/admin/profile" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminProfile />
+                      </ProtectedRoute>
+                    } />
+
                     <Route path="/seller" element={
                       <ProtectedRoute requiredRole="seller">
                         <SellerDashboard />
+                      </ProtectedRoute>
+                    } />
+
+                    <Route path="/seller/profile" element={
+                      <ProtectedRoute requiredRole="seller">
+                        <SellerProfile />
                       </ProtectedRoute>
                     } />
 
@@ -69,12 +86,17 @@ const App = () => (
                         <CustomerDashboard />
                       </ProtectedRoute>
                     } />
+                    <Route path="/customer/profile" element={
+                      <ProtectedRoute requiredRole="customer">
+                        <CustomerProfile />
+                      </ProtectedRoute>
+                    } />
                     <Route path="/admin/orders" element={
                       <ProtectedRoute requiredRole="admin">
                         <AdminOrdersPage />
                       </ProtectedRoute>
                     } />
-                  
+
                     <Route path="/admin/sellers" element={
                       <ProtectedRoute requiredRole="admin">
                         <SellersPage />

@@ -7,18 +7,34 @@ import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
 import { orderApi } from '@/lib/api';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 export const CartSheet = () => {
   const { cartItems, removeFromCart, updateItemQuantity, getCartTotal, clearCart, sellerId } = useCart();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [shippingAddress, setShippingAddress] = useState({
+    street: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: ''
+  });
 
   const handleCheckout = async () => {
     if (!sellerId || cartItems.length === 0) {
       toast({ title: "Cart is empty!", variant: "destructive" });
       return;
     }
+
+    // Validate shipping address
+    if (!shippingAddress.street || !shippingAddress.city || !shippingAddress.country) {
+      toast({ title: "Please fill in all required shipping address fields!", variant: "destructive" });
+      return;
+    }
+
     setIsCheckingOut(true);
     const orderData = {
       sellerId: sellerId,
@@ -26,6 +42,7 @@ export const CartSheet = () => {
         inventoryItemId: item.id,
         quantity: item.quantity,
       })),
+      shippingAddress: shippingAddress
     };
     try {
       await orderApi.create(orderData);
@@ -75,39 +92,94 @@ export const CartSheet = () => {
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
-                        {/* Quantity Controls */}
-                        <div className="flex items-center gap-1">
-                            <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateItemQuantity(item.id, item.quantity - 1)}>
-                                <Minus className="h-3 w-3" />
-                            </Button>
-                            <span className="w-6 text-center">{item.quantity}</span>
-                            <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateItemQuantity(item.id, item.quantity + 1)}>
-                                <Plus className="h-3 w-3" />
-                            </Button>
-                        </div>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeFromCart(item.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-1">
+                        <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateItemQuantity(item.id, item.quantity - 1)}>
+                          <Minus className="h-3 w-3" />
                         </Button>
+                        <span className="w-6 text-center">{item.quantity}</span>
+                        <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateItemQuantity(item.id, item.quantity + 1)}>
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => removeFromCart(item.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </div>
                   </div>
                 ))}
               </div>
               <SheetFooter className="mt-auto border-t pt-4">
                 <div className="w-full space-y-4">
-                    <div className="flex justify-between font-bold text-lg">
-                        <span>Total</span>
-                        <span>৳{getCartTotal().toFixed(2)}</span>
+                  {/* Shipping Address Form */}
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">Shipping Address</h3>
+                    <div className="grid grid-cols-1 gap-2">
+                      <div>
+                        <Label htmlFor="street">Street Address *</Label>
+                        <Input
+                          id="street"
+                          value={shippingAddress.street}
+                          onChange={(e) => setShippingAddress({ ...shippingAddress, street: e.target.value })}
+                          placeholder="123 Main St"
+                        />
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label htmlFor="city">City *</Label>
+                          <Input
+                            id="city"
+                            value={shippingAddress.city}
+                            onChange={(e) => setShippingAddress({ ...shippingAddress, city: e.target.value })}
+                            placeholder="Dhaka"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="state">State</Label>
+                          <Input
+                            id="state"
+                            value={shippingAddress.state}
+                            onChange={(e) => setShippingAddress({ ...shippingAddress, state: e.target.value })}
+                            placeholder="Dhaka"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label htmlFor="zipCode">Zip Code</Label>
+                          <Input
+                            id="zipCode"
+                            value={shippingAddress.zipCode}
+                            onChange={(e) => setShippingAddress({ ...shippingAddress, zipCode: e.target.value })}
+                            placeholder="1200"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="country">Country *</Label>
+                          <Input
+                            id="country"
+                            value={shippingAddress.country}
+                            onChange={(e) => setShippingAddress({ ...shippingAddress, country: e.target.value })}
+                            placeholder="Bangladesh"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <Button className="w-full" onClick={handleCheckout} disabled={isCheckingOut || cartItems.length === 0}>
-                      {isCheckingOut ? (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      ) : (
-                        "Proceed to Checkout"
-                      )}
-                    </Button>
-                    <Button variant="outline" className="w-full" onClick={clearCart}>
-                        Clear Cart
-                    </Button>
+                  </div>
+                  <div className="flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span>৳{getCartTotal().toFixed(2)}</span>
+                  </div>
+                  <Button className="w-full" onClick={handleCheckout} disabled={isCheckingOut || cartItems.length === 0}>
+                    {isCheckingOut ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      "Proceed to Checkout"
+                    )}
+                  </Button>
+                  <Button variant="outline" className="w-full" onClick={clearCart}>
+                    Clear Cart
+                  </Button>
                 </div>
               </SheetFooter>
             </>
