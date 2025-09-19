@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Users, User, ShoppingCart, UserCheck, Leaf, Pill, Bug, Plus, Loader2 } from 'lucide-react';
@@ -108,18 +109,43 @@ const AdminDashboard = () => {
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Add new items to the global catalog.</CardDescription>
+          <CardDescription>Manage the global catalog and review applications.</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-wrap gap-4">
-          <Button onClick={() => setShowForm('plant')}>
-            <Leaf className="mr-2 h-4 w-4" /> Add Plant
-          </Button>
-          <Button onClick={() => setShowForm('medicine')} variant="outline">
-            <Pill className="mr-2 h-4 w-4" /> Add Medicine
-          </Button>
-          <Button onClick={() => setShowForm('disease')} variant="outline">
-            <Bug className="mr-2 h-4 w-4" /> Add Disease
-          </Button>
+        <CardContent className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium text-muted-foreground mb-3">Manage Catalog</h4>
+            <div className="flex flex-wrap gap-2 mb-4">
+              <Button onClick={() => setShowForm('plant')}>
+                <Leaf className="mr-2 h-4 w-4" /> Add Plant
+              </Button>
+              <Button onClick={() => setShowForm('medicine')} variant="outline">
+                <Pill className="mr-2 h-4 w-4" /> Add Medicine
+              </Button>
+              <Button onClick={() => setShowForm('disease')} variant="outline">
+                <Bug className="mr-2 h-4 w-4" /> Add Disease
+              </Button>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium text-muted-foreground mb-3">Browse Catalog</h4>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="outline">
+                <Link to="/plants">
+                  🌱 View Plants
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/medicines">
+                  💊 View Medicines
+                </Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link to="/diseases">
+                  🦠 View Diseases
+                </Link>
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
       

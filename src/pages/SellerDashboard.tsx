@@ -162,7 +162,7 @@ const SellerDashboard = () => {
         <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Manage your shop's core functions.</CardDescription>
+            <CardDescription>Manage your shop and explore the platform.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Button asChild className="w-full justify-start text-base py-6">
@@ -177,6 +177,24 @@ const SellerDashboard = () => {
                 View All Orders
               </Link>
             </Button>
+            <div className="pt-4 border-t">
+              <p className="text-sm font-medium text-muted-foreground mb-3">Explore Catalog</p>
+              <Button asChild variant="outline" className="w-full justify-start text-sm py-4 mb-2">
+                <Link to="/plants">
+                  🌱 Browse Plants
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full justify-start text-sm py-4 mb-2">
+                <Link to="/medicines">
+                  💊 Browse Medicines
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full justify-start text-sm py-4">
+                <Link to="/diseases">
+                  🦠 Browse Diseases
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
 

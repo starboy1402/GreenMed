@@ -65,6 +65,9 @@ const Navbar = () => {
     if (userType === 'seller') {
       return [
         { label: 'Dashboard', path: '/seller' },
+        { label: 'Plants', path: '/plants' },
+        { label: 'Medicines', path: '/medicines' },
+        { label: 'Diseases', path: '/diseases' },
         { label: 'Inventory', path: '/inventory' },
         { label: 'Orders', path: '/orders' },
       ];
@@ -73,7 +76,10 @@ const Navbar = () => {
     if (userType === 'admin') {
       return [
         { label: 'Dashboard', path: '/admin' },
-        // { label: 'Manage Sellers', path: '/sellers' },
+        { label: 'Plants', path: '/plants' },
+        { label: 'Medicines', path: '/medicines' },
+        { label: 'Diseases', path: '/diseases' },
+        { label: 'Sellers', path: '/sellers' },
         { label: 'All Orders', path: '/admin/orders' },
       ];
     }
