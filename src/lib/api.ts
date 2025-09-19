@@ -76,6 +76,7 @@ export const orderApi = {
   getByCustomer: () => api.get('/orders/customer'),
   getBySeller: () => api.get('/orders/seller'),
   getDetails: (orderId: string) => api.get(`/orderdetails/${orderId}`),
+   getAllOrders: () => api.get('/admin/orders'), 
   updateStatus: (orderId: number, status: string) => api.put(`/orders/${orderId}/status?status=${status}`),
 };
 

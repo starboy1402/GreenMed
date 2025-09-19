@@ -23,11 +23,11 @@ public class DashboardService {
     private final InventoryRepository inventoryRepository;
 
     public AdminDashboardStatsDTO getAdminDashboardStats() {
-        // calculate admin dashboard statistics (fallback implementation to ensure compilation)
-        long totalCustomers = userRepository.count(); // fallback: total users treated as customers if no specific method exists
-        long totalSellers = 0; // adjust if you have a repository method to count sellers by role
-        long totalOrders = orderRepository.count();
-        long pendingSellers = 0; // adjust if you have a repository method to count pending sellers
+        // This is the corrected implementation using our specific repository methods
+        long totalCustomers = userRepository.countTotalCustomers();
+        long totalSellers = userRepository.countTotalSellers();
+        long totalOrders = orderRepository.countPaidOrders();
+        long pendingSellers = userRepository.countPendingSellers();
 
         return new AdminDashboardStatsDTO(totalCustomers, totalSellers, totalOrders, pendingSellers);
     }

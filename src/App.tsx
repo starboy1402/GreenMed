@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {  Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Layout/Navbar";
 import Index from "./pages/Index";
@@ -21,6 +21,7 @@ import ProtectedRoute from "./components/Auth/ProtectedRoute";
 import DiseasesPage from "./pages/DiseasesPage";
 import SellersDisplayPage from "./pages/SellersDisplayPage";
 import SellerShopPage from "./pages/SellerShopPage";
+import AdminOrdersPage from '@/pages/AdminOrdersPage';
 
 const queryClient = new QueryClient();
 
@@ -30,71 +31,82 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        
-          <div className="min-h-screen bg-gradient-subtle">
-            <Routes>
-              {/* Public routes */}
-              <Route path="/auth" element={<AuthPage />} />
-              
-              {/* Routes with navbar */}
-              <Route path="/*" element={
-                <div>
-                  <Navbar />
-                  <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/plants" element={<PlantsPage />} />
-                      <Route path="/medicines" element={<MedicinesPage />} />
-                      <Route path="/diseases" element={<DiseasesPage />} />
-                       <Route path="/sellers" element={<SellersDisplayPage />} />
-                      <Route path="/sellers/:sellerId" element={<SellerShopPage />} /> 
 
+        <div className="min-h-screen bg-gradient-subtle">
+          <Routes>
+            {/* Public routes */}
+            <Route path="/auth" element={<AuthPage />} />
+
+            {/* Routes with navbar */}
+            <Route path="/*" element={
+              <div>
+                <Navbar />
+                <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/plants" element={<PlantsPage />} />
+                    <Route path="/medicines" element={<MedicinesPage />} />
+                    <Route path="/diseases" element={<DiseasesPage />} />
+                    <Route path="/sellers" element={<SellersDisplayPage />} />
+                    <Route path="/sellers/:sellerId" element={<SellerShopPage />} />
+
+
+                    {/* Protected routes */}
+                    <Route path="/admin" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    } />
+
+                    <Route path="/seller" element={
+                      <ProtectedRoute requiredRole="seller">
+                        <SellerDashboard />
+                      </ProtectedRoute>
+                    } />
+
+                    <Route path="/customer" element={
+                      <ProtectedRoute requiredRole="customer">
+                        <CustomerDashboard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin/orders" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminOrdersPage />
+                      </ProtectedRoute>
+                    } />
                   
-                      {/* Protected routes */}
-                      <Route path="/admin" element={
-                        <ProtectedRoute requiredRole="admin">
-                          <AdminDashboard />
-                        </ProtectedRoute>
-                      } />
-                      
-                      <Route path="/seller" element={
-                        <ProtectedRoute requiredRole="seller">
-                          <SellerDashboard />
-                        </ProtectedRoute>
-                      } />
-                      
-                      <Route path="/customer" element={
-                        <ProtectedRoute requiredRole="customer">
-                          <CustomerDashboard />
-                        </ProtectedRoute>
-                      } />
-                      
-                      <Route path="/orders" element={
-                        <ProtectedRoute>
-                          <OrdersPage />
-                        </ProtectedRoute>
-                      } />
-                      
-                      <Route path="/inventory" element={
-                        <ProtectedRoute requiredRole="seller">
-                          <InventoryPage />
-                        </ProtectedRoute>
-                      } />
-                      
-                      <Route path="/sellers" element={
-                        <ProtectedRoute requiredRole="admin">
-                          <SellersPage />
-                        </ProtectedRoute>
-                      } />
-                      
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </main>
-                </div>
-              } />
-            </Routes>
-          </div>
-       
+                    <Route path="/admin/sellers" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <SellersPage />
+                      </ProtectedRoute>
+                    } />
+
+                    <Route path="/orders" element={
+                      <ProtectedRoute>
+                        <OrdersPage />
+                      </ProtectedRoute>
+                    } />
+
+                    <Route path="/inventory" element={
+                      <ProtectedRoute requiredRole="seller">
+                        <InventoryPage />
+                      </ProtectedRoute>
+                    } />
+
+                    <Route path="/sellers" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <SellersPage />
+                      </ProtectedRoute>
+                    } />
+
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+              </div>
+            } />
+          </Routes>
+        </div>
+
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>

@@ -55,7 +55,7 @@ public class OrderController {
             return ResponseEntity.badRequest().build();
         }
     }
-
+    
     @PutMapping("/{orderId}/status")
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public ResponseEntity<Order> updateOrderStatus(

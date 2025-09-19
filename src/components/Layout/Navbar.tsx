@@ -73,7 +73,8 @@ const Navbar = () => {
      if (userType === 'admin') {
       return [
         { label: 'Dashboard', path: '/admin' },
-        { label: 'Manage Sellers', path: '/sellers-management' },
+        // { label: 'Manage Sellers', path: '/sellers' },
+        { label: 'All Orders', path: '/admin/orders' },
       ];
     }
 
