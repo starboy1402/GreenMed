@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/inventory")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = { "http://localhost:8081", "http://localhost:8082" })
 public class InventoryController {
 
     private final InventoryService inventoryService;
@@ -24,7 +24,7 @@ public class InventoryController {
     public ResponseEntity<List<Inventory>> getSellerInventory(Principal principal) {
         return ResponseEntity.ok(inventoryService.getInventoryBySeller(principal.getName()));
     }
-    
+
     // This is the new public endpoint
     @GetMapping("/seller/{sellerId}")
     public ResponseEntity<List<Inventory>> getInventoryBySellerId(@PathVariable Long sellerId) {
@@ -39,7 +39,8 @@ public class InventoryController {
 
     @PutMapping("/{itemId}")
     @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<?> updateInventoryItem(@PathVariable Long itemId, @RequestBody Inventory updatedItem, Principal principal) {
+    public ResponseEntity<?> updateInventoryItem(@PathVariable Long itemId, @RequestBody Inventory updatedItem,
+            Principal principal) {
         try {
             Inventory item = inventoryService.updateInventoryItem(itemId, updatedItem, principal.getName());
             return ResponseEntity.ok(item);

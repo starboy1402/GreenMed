@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/dashboard/public-stats").permitAll()
                         .requestMatchers("/api/plants/**").permitAll()
                         .requestMatchers("/api/diseases/**").permitAll()
                         .requestMatchers("/api/medicines/**").permitAll()
@@ -65,7 +66,9 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "http://127.0.0.1:3000",
                 "http://localhost:8080",
-                "http://127.0.0.1:8080"));
+                "http://127.0.0.1:8080",
+                "http://localhost:8082",
+                "http://127.0.0.1:8082"));
 
         configuration.setAllowedMethods(Arrays.asList(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));

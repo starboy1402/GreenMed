@@ -103,6 +103,7 @@ export const dashboardApi = {
 // Add the new reviewApi
 export const reviewApi = {
   getSellerRating: (sellerId: string) => api.get(`/reviews/seller/${sellerId}/rating`),
+  getReviewsBySeller: (sellerId: string) => api.get(`/reviews/seller/${sellerId}`),
 };
 
 export default api;

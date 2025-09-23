@@ -4,6 +4,7 @@ import com.plantmanagement.entity.Review;
 import com.plantmanagement.entity.User;
 import com.plantmanagement.repository.ReviewRepository;
 import com.plantmanagement.repository.UserRepository;
+import com.plantmanagement.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
     public List<Review> getReviewsBySeller(Long sellerId) {
         User seller = userRepository.findById(sellerId)
@@ -32,8 +34,10 @@ public class ReviewService {
             throw new RuntimeException("Cannot review yourself");
         }
 
-        if (reviewRepository.existsBySellerAndReviewer(seller, reviewer)) {
-            throw new RuntimeException("You have already reviewed this seller");
+        // Check if customer has purchased from this seller
+        boolean hasPurchased = orderRepository.hasCustomerPurchasedFromSeller(reviewer.getId(), sellerId);
+        if (!hasPurchased) {
+            throw new RuntimeException("You can only review sellers you have purchased from");
         }
 
         if (rating < 1 || rating > 5) {

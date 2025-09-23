@@ -14,7 +14,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/payment")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = { "http://localhost:8081", "http://localhost:8082" })
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -35,4 +35,3 @@ public class PaymentController {
         }
     }
 }
-

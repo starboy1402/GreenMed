@@ -1,12 +1,22 @@
 
 // AuthPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Leaf } from 'lucide-react';
 import { LoginForm } from '@/components/Auth/LoginForm';
 import { SignupForm } from '@/components/Auth/SignupForm';
 
 const AuthPage = () => {
+  const [searchParams] = useSearchParams();
   const [isLogin, setIsLogin] = useState(true);
+
+  useEffect(() => {
+    // Check if the URL has a 'mode' parameter set to 'signup'
+    const mode = searchParams.get('mode');
+    if (mode === 'signup') {
+      setIsLogin(false);
+    }
+  }, [searchParams]);
 
   return (
     <div className="min-h-screen bg-gradient-subtle flex items-center justify-center p-4">

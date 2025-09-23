@@ -15,7 +15,7 @@ import java.util.HashMap;
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = { "http://localhost:8081", "http://localhost:8082" })
 public class ReviewController {
 
     private final ReviewService reviewService;
@@ -27,7 +27,7 @@ public class ReviewController {
 
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<Review> createReview(
+    public ResponseEntity<?> createReview(
             @RequestBody Map<String, Object> request,
             Principal principal) {
         try {
@@ -37,8 +37,14 @@ public class ReviewController {
 
             Review review = reviewService.createReview(sellerId, principal.getName(), rating, comment);
             return ResponseEntity.ok(review);
+        } catch (RuntimeException e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Invalid request data");
+            return ResponseEntity.badRequest().body(error);
         }
     }
 

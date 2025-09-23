@@ -33,9 +33,21 @@ interface SellerRating {
   totalReviews: number;
 }
 
+interface Review {
+  id: number;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  reviewer: {
+    id: string;
+    name: string;
+  };
+}
+
 const SellerDashboard = () => {
   const [stats, setStats] = useState<SellerStats | null>(null);
   const [rating, setRating] = useState<SellerRating | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { user } = useAuth();
@@ -68,10 +80,23 @@ const SellerDashboard = () => {
     }
   }, [user]);
 
+  const fetchReviews = useCallback(async () => {
+    if (!user?.id) return;
+
+    try {
+      const response = await reviewApi.getReviewsBySeller(user.id.toString());
+      setReviews(response.data);
+    } catch (error) {
+      console.log('Failed to fetch reviews');
+      setReviews([]);
+    }
+  }, [user]);
+
   useEffect(() => {
     fetchStats();
     fetchRating();
-  }, [fetchStats, fetchRating]);
+    fetchReviews();
+  }, [fetchStats, fetchRating, fetchReviews]);
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
@@ -82,6 +107,15 @@ const SellerDashboard = () => {
       case 'CANCELLED': return 'outline';
       default: return 'secondary';
     }
+  };
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`h-4 w-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`}
+      />
+    ));
   };
 
   return (
@@ -238,6 +272,58 @@ const SellerDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Customer Reviews */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Customer Reviews</CardTitle>
+          <CardDescription>Recent feedback from your customers</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          ) : reviews.length > 0 ? (
+            <div className="space-y-4 max-h-96 overflow-y-auto">
+              {reviews.slice(0, 5).map((review) => (
+                <div key={review.id} className="p-4 rounded-lg border bg-muted/30">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="font-semibold">{review.reviewer.name}</span>
+                        <div className="flex">
+                          {renderStars(review.rating)}
+                        </div>
+                      </div>
+                      {review.comment && (
+                        <p className="text-muted-foreground mb-2">{review.comment}</p>
+                      )}
+                      <p className="text-sm text-muted-foreground">
+                        {new Date(review.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {reviews.length > 5 && (
+                <div className="text-center pt-2">
+                  <Button asChild variant="outline">
+                    <Link to={`/sellers/${user?.id}/reviews`}>
+                      View All Reviews ({reviews.length})
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <p>No reviews yet. Reviews will appear here once customers leave feedback.</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

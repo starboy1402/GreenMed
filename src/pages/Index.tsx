@@ -213,7 +213,7 @@ import { dashboardApi } from '@/lib/api'; const Index = () => {
           Join our community of plant lovers and wellness seekers today.
         </p>
         <Button asChild size="lg" className="mt-6">
-          <Link to="/auth/signup">
+          <Link to="/auth?mode=signup">
             Create Your Account
           </Link>
         </Button>

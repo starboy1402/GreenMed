@@ -15,7 +15,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByCustomerId(Long customerId);
 
     List<Order> findBySellerId(Long sellerId);
-    
+
     @Query("SELECT COUNT(o) FROM Order o WHERE o.status != 'PENDING_PAYMENT' AND o.status != 'CANCELLED'")
     long countPaidOrders();
 
@@ -24,5 +24,7 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     long countActiveOrdersForSeller(@Param("sellerId") Long sellerId);
 
     List<Order> findTop5BySellerIdOrderByOrderDateDesc(Long sellerId);
-}
 
+    @Query("SELECT COUNT(o) > 0 FROM Order o WHERE o.customer.id = :customerId AND o.seller.id = :sellerId AND o.status != 'PENDING_PAYMENT' AND o.status != 'CANCELLED'")
+    boolean hasCustomerPurchasedFromSeller(@Param("customerId") Long customerId, @Param("sellerId") Long sellerId);
+}

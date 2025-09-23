@@ -15,7 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = { "http://localhost:8081", "http://localhost:8082" })
 public class OrderController {
 
     private final OrderService orderService;
@@ -43,7 +43,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrdersBySeller(principal.getName()));
     }
 
-   @PostMapping("/{orderId}/pay")
+    @PostMapping("/{orderId}/pay")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Order> payForOrder(@PathVariable Long orderId, Principal principal) {
         try {
@@ -55,7 +55,7 @@ public class OrderController {
             return ResponseEntity.badRequest().build();
         }
     }
-    
+
     @PutMapping("/{orderId}/status")
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
     public ResponseEntity<Order> updateOrderStatus(

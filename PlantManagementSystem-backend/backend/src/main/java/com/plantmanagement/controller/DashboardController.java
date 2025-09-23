@@ -17,7 +17,7 @@ import java.security.Principal;
 @RestController
 @RequestMapping("/api/dashboard")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = { "http://localhost:8081", "http://localhost:8082" })
 public class DashboardController {
 
     private final DashboardService dashboardService;

@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin(origins = { "http://localhost:8081", "http://localhost:8082" })
 public class AuthController {
-    
+
     private final AuthService authService;
-    
+
     // Add a test endpoint to check if the controller is working
     @GetMapping("/test")
     public ResponseEntity<?> test() {
         return ResponseEntity.ok(new SuccessResponse("success", "Auth controller is working"));
     }
-    
+
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@Valid @RequestBody SignupRequest request) {
         try {
@@ -35,7 +35,7 @@ public class AuthController {
                     .body(new ErrorResponse("error", e.getMessage()));
         }
     }
-    
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
@@ -44,12 +44,13 @@ public class AuthController {
             System.out.println("Login successful for email: " + request.getEmail()); // Debug log
             return ResponseEntity.ok(loginResponse);
         } catch (RuntimeException e) {
-            System.err.println("Login failed for email: " + request.getEmail() + ", Error: " + e.getMessage()); // Debug log
+            System.err.println("Login failed for email: " + request.getEmail() + ", Error: " + e.getMessage()); // Debug
+                                                                                                                // log
             return ResponseEntity.badRequest()
                     .body(new ErrorResponse("error", e.getMessage()));
         }
     }
-    
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
@@ -65,7 +66,7 @@ public class AuthController {
                     .body(new ErrorResponse("error", e.getMessage()));
         }
     }
-    
+
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
         try {
@@ -81,31 +82,41 @@ public class AuthController {
                     .body(new ErrorResponse("error", e.getMessage()));
         }
     }
-    
+
     // Response DTOs
     public static class ErrorResponse {
         private String status;
         private String message;
-        
+
         public ErrorResponse(String status, String message) {
             this.status = status;
             this.message = message;
         }
-        
-        public String getStatus() { return status; }
-        public String getMessage() { return message; }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
-    
+
     public static class SuccessResponse {
         private String status;
         private String message;
-        
+
         public SuccessResponse(String status, String message) {
             this.status = status;
             this.message = message;
         }
-        
-        public String getStatus() { return status; }
-        public String getMessage() { return message; }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

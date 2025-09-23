@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
-@CrossOrigin(origins = { "http://localhost:8081", "http://localhost:8080" })
+@CrossOrigin(origins = { "http://localhost:8081", "http://localhost:8080", "http://localhost:8082" })
 public class AdminController {
 
     private final AdminService adminService;
