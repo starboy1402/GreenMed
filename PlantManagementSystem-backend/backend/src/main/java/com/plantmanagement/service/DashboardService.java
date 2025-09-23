@@ -1,6 +1,7 @@
 package com.plantmanagement.service;
 
 import com.plantmanagement.dto.AdminDashboardStatsDTO;
+import com.plantmanagement.dto.OrderResponse;
 import com.plantmanagement.dto.SellerDashboardStatsDTO;
 import com.plantmanagement.dto.PublicStatsDTO;
 import com.plantmanagement.entity.Order;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,8 +46,12 @@ public class DashboardService {
         long lowStockItems = inventoryRepository.countLowStockItemsForSeller(seller.getId());
         long totalProducts = inventoryRepository.countBySellerId(seller.getId());
         List<Order> recentOrders = orderRepository.findTop5BySellerIdOrderByOrderDateDesc(seller.getId());
+        List<OrderResponse> recentOrderResponses = recentOrders.stream()
+                .map(OrderResponse::new)
+                .collect(Collectors.toList());
 
-        return new SellerDashboardStatsDTO(totalRevenue, activeOrders, lowStockItems, totalProducts, recentOrders);
+        return new SellerDashboardStatsDTO(totalRevenue, activeOrders, lowStockItems, totalProducts,
+                recentOrderResponses);
     }
 
     public PublicStatsDTO getPublicStats() {

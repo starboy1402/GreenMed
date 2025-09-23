@@ -12,18 +12,28 @@ import PaymentDialog from '@/components/Layout/PaymentDialog'; // Import the new
 
 // --- Type Definitions ---
 interface OrderItem {
-  inventoryItem: { name: string; };
-  quantity: number;
-  price: number;
+    productName: string;
+    quantity: number;
+    price: number;
+}
+interface ShippingAddress {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
 }
 interface Order {
-  id: number;
-  orderDate: string;
-  status: 'PENDING_PAYMENT' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  totalAmount: number;
-  items: OrderItem[];
-  customer: { name: string; email: string; };
-  seller: { shopName: string; };
+    id: number;
+    orderDate: string;
+    status: 'PENDING_PAYMENT' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+    totalAmount: number;
+    items: OrderItem[];
+    customerName: string;
+    customerEmail: string;
+    customerPhoneNumber: string;
+    shippingAddress?: ShippingAddress;
+    sellerShopName: string;
 }
 
 const OrdersPage = () => {
@@ -62,12 +72,12 @@ const OrdersPage = () => {
             });
             fetchOrders();
         } catch (error) {
-             toast({ title: "Update Failed", description: "Could not update the order status.", variant: "destructive" });
+            toast({ title: "Update Failed", description: "Could not update the order status.", variant: "destructive" });
         } finally {
             setUpdatingOrderId(null);
         }
     };
-    
+
     const getStatusBadgeVariant = (status: Order['status']) => {
         switch (status) {
             case 'PENDING_PAYMENT': return 'destructive';
@@ -81,7 +91,7 @@ const OrdersPage = () => {
 
     return (
         <div className="space-y-6 animate-grow-in">
-             <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-3xl font-bold">
                         {userType === 'seller' ? 'Incoming Orders' : 'My Orders'}
@@ -94,16 +104,16 @@ const OrdersPage = () => {
             </div>
 
             {loading && !orders.length ? (
-                 <div className="text-center p-12">
+                <div className="text-center p-12">
                     <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mx-auto" />
-                 </div>
+                </div>
             ) : orders.length === 0 ? (
-                 <Card className="text-center py-12">
+                <Card className="text-center py-12">
                     <CardHeader>
                         <PackageSearch className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                         <CardTitle>No Orders Found</CardTitle>
                         <CardDescription>
-                            {userType === 'customer' 
+                            {userType === 'customer'
                                 ? "You haven't placed any orders yet. Start shopping!"
                                 : "You have no incoming orders at the moment."
                             }
@@ -138,15 +148,26 @@ const OrdersPage = () => {
                                     <AccordionContent className="bg-muted/20 px-6 pt-4 pb-6">
                                         <div className="space-y-4">
                                             {userType === 'seller' && (
-                                                <div className="p-2 bg-background rounded-md">
-                                                    <p className="text-sm font-medium">Customer: {order.customer.name}</p>
-                                                    <p className="text-xs text-muted-foreground">{order.customer.email}</p>
+                                                <div className="p-2 bg-background rounded-md space-y-2">
+                                                    <div>
+                                                        <p className="text-sm font-medium">Customer: {order.customerName}</p>
+                                                        <p className="text-xs text-muted-foreground">{order.customerEmail}</p>
+                                                        <p className="text-xs text-muted-foreground">Phone: {order.customerPhoneNumber}</p>
+                                                    </div>
+                                                    {order.shippingAddress && (
+                                                        <div>
+                                                            <p className="text-sm font-medium">Shipping Address:</p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {order.shippingAddress.street}, {order.shippingAddress.city}, {order.shippingAddress.state} {order.shippingAddress.zipCode}, {order.shippingAddress.country}
+                                                            </p>
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                             {order.items.map((item, index) => (
                                                 <div key={index} className="flex justify-between py-2 border-b">
                                                     <div>
-                                                        <p className="font-medium">{item.inventoryItem.name}</p>
+                                                        <p className="font-medium">{item.productName}</p>
                                                         <p className="text-xs text-muted-foreground">
                                                             {item.quantity} x ৳{item.price.toFixed(2)}
                                                         </p>
@@ -188,18 +209,18 @@ const OrdersPage = () => {
                     </CardContent>
                 </Card>
             )}
-            
+
             {payingOrder && (
-              <PaymentDialog
-                isOpen={!!payingOrder}
-                orderId={payingOrder.id}
-                amount={payingOrder.totalAmount}
-                onClose={() => setPayingOrder(null)}
-                onSuccess={() => {
-                  setPayingOrder(null);
-                  fetchOrders();
-                }}
-              />
+                <PaymentDialog
+                    isOpen={!!payingOrder}
+                    orderId={payingOrder.id}
+                    amount={payingOrder.totalAmount}
+                    onClose={() => setPayingOrder(null)}
+                    onSuccess={() => {
+                        setPayingOrder(null);
+                        fetchOrders();
+                    }}
+                />
             )}
         </div>
     );

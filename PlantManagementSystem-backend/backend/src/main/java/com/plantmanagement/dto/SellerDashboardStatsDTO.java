@@ -1,6 +1,5 @@
 package com.plantmanagement.dto;
 
-import com.plantmanagement.entity.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,5 +14,5 @@ public class SellerDashboardStatsDTO {
     private long activeOrders;
     private long lowStockItems;
     private long totalProducts;
-    private List<Order> recentOrders;
+    private List<OrderResponse> recentOrders;
 }

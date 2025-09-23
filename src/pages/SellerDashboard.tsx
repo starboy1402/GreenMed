@@ -15,8 +15,14 @@ interface Order {
   orderDate: string;
   status: string;
   totalAmount: number;
-  customer: {
-    name: string;
+  customerName: string;
+  customerPhoneNumber: string;
+  shippingAddress?: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
   };
 }
 
@@ -252,7 +258,7 @@ const SellerDashboard = () => {
                     <div>
                       <div className="font-medium">Order #{order.id}</div>
                       <div className="text-sm text-muted-foreground">
-                        {order.customer.name} - {new Date(order.orderDate).toLocaleDateString()}
+                        {order.customerName} - {new Date(order.orderDate).toLocaleDateString()}
                       </div>
                     </div>
                     <div className="text-right">

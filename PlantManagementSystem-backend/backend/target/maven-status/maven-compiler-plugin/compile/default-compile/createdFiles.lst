@@ -6,6 +6,7 @@ com\plantmanagement\entity\User$UserRole.class
 com\plantmanagement\controller\DashboardController.class
 com\plantmanagement\security\JwtAuthenticationEntryPoint.class
 com\plantmanagement\repository\DiseaseRepository.class
+com\plantmanagement\dto\OrderResponse$ShippingAddressDto.class
 com\plantmanagement\entity\User$ApplicationStatus.class
 com\plantmanagement\repository\PlantRepository.class
 com\plantmanagement\dto\UserResponse.class
@@ -45,6 +46,7 @@ com\plantmanagement\controller\UserController.class
 com\plantmanagement\entity\Medicine.class
 com\plantmanagement\controller\AuthController$ErrorResponse.class
 com\plantmanagement\util\JwtUtil.class
+com\plantmanagement\dto\OrderResponse$OrderItemDto.class
 com\plantmanagement\entity\ShippingAddress.class
 com\plantmanagement\dto\PublicStatsDTO.class
 com\plantmanagement\controller\PaymentController.class
@@ -52,6 +54,7 @@ com\plantmanagement\entity\User.class
 com\plantmanagement\repository\ReviewRepository.class
 com\plantmanagement\dto\AdminDashboardStatsDTO.class
 com\plantmanagement\dto\OrderRequest$ShippingAddressDto.class
+com\plantmanagement\dto\OrderResponse.class
 com\plantmanagement\service\UserService.class
 com\plantmanagement\service\PaymentService.class
 com\plantmanagement\dto\AdminOrderResponse.class

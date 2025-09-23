@@ -1,6 +1,7 @@
 package com.plantmanagement.controller;
 
 import com.plantmanagement.dto.OrderRequest;
+import com.plantmanagement.dto.OrderResponse;
 import com.plantmanagement.entity.Order;
 import com.plantmanagement.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -33,22 +35,31 @@ public class OrderController {
 
     @GetMapping("/customer")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<List<Order>> getCustomerOrders(Principal principal) {
-        return ResponseEntity.ok(orderService.getOrdersByCustomer(principal.getName()));
+    public ResponseEntity<List<OrderResponse>> getCustomerOrders(Principal principal) {
+        List<Order> orders = orderService.getOrdersByCustomer(principal.getName());
+        List<OrderResponse> orderResponses = orders.stream()
+                .map(OrderResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(orderResponses);
     }
 
     @GetMapping("/seller")
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
-    public ResponseEntity<List<Order>> getSellerOrders(Principal principal) {
-        return ResponseEntity.ok(orderService.getOrdersBySeller(principal.getName()));
+    public ResponseEntity<List<OrderResponse>> getSellerOrders(Principal principal) {
+        List<Order> orders = orderService.getOrdersBySeller(principal.getName());
+        List<OrderResponse> orderResponses = orders.stream()
+                .map(OrderResponse::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(orderResponses);
     }
 
     @PostMapping("/{orderId}/pay")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<Order> payForOrder(@PathVariable Long orderId, Principal principal) {
+    public ResponseEntity<OrderResponse> payForOrder(@PathVariable Long orderId, Principal principal) {
         try {
             Order paidOrder = orderService.processPayment(orderId, principal.getName());
-            return ResponseEntity.ok(paidOrder);
+            OrderResponse response = new OrderResponse(paidOrder);
+            return ResponseEntity.ok(response);
         } catch (AccessDeniedException e) {
             return ResponseEntity.status(403).build();
         } catch (RuntimeException e) {
@@ -58,13 +69,14 @@ public class OrderController {
 
     @PutMapping("/{orderId}/status")
     @PreAuthorize("hasRole('SELLER') or hasRole('ADMIN')")
-    public ResponseEntity<Order> updateOrderStatus(
+    public ResponseEntity<OrderResponse> updateOrderStatus(
             @PathVariable Long orderId,
             @RequestParam("status") Order.OrderStatus status,
             Principal principal) {
         try {
             Order updatedOrder = orderService.updateOrderStatus(orderId, status, principal.getName());
-            return ResponseEntity.ok(updatedOrder);
+            OrderResponse response = new OrderResponse(updatedOrder);
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
